@@ -217,6 +217,14 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
   border-radius:4px;letter-spacing:.14em;font-size:13.5px;transition:.18s;
 }
 .btn-next:hover{background:#000;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.nav-row{display:flex;gap:8px;margin-top:16px}
+.nav-row .btn-next{margin-top:0;flex:1}
+.btn-prev{
+  flex:none;padding:13px 18px;background:transparent;color:var(--ink2);
+  border:1px solid rgba(34,31,26,.25);border-radius:4px;font-size:13px;letter-spacing:.1em;transition:.18s;
+}
+.btn-prev:hover{border-color:var(--ink);color:var(--ink);background:rgba(34,31,26,.04)}
+.chip:disabled{opacity:.9;cursor:default}
 
 /* ---------- summary ---------- */
 #summary{background:radial-gradient(900px 600px at 50% 10%, #262019 0%, transparent 60%)}
@@ -299,7 +307,9 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .tab.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .viz-pane{display:none;animation:fade .3s ease}
 .viz-pane.on{display:block}
-.howto{font-size:11.5px;color:var(--muted);line-height:1.8;margin-top:10px;letter-spacing:.03em}
+.howto{margin-top:12px;padding:11px 13px;background:rgba(34,31,26,.055);border-left:3px solid var(--ink);font-size:12.6px;line-height:1.85;color:var(--ink);letter-spacing:.02em}
+.howto b{color:var(--red)}
+.modal-card .evidence-body p{font-size:13.6px;line-height:1.95;color:var(--ink)}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);margin:10px 0 4px}
 .legend i{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:6px;border-radius:2px}
 
@@ -485,6 +495,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
     <div class="tools">
       <button class="tool" id="btnCase">案卷</button>
       <button class="tool" id="btnRules">规则</button>
+      <button class="tool" id="btnReset">重来</button>
       <button class="tool" id="btnAbout">说明</button>
       <button class="tool" id="btnMute">音效：开</button>
     </div>
@@ -523,7 +534,10 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
         <div class="rows" id="ledgerRows"></div>
         <div class="tray-hint" id="ledgerSum"></div>
       </div>
-      <button class="btn btn-next" id="btnNext" hidden>下一条</button>
+      <div class="nav-row">
+        <button class="btn btn-prev" id="btnPrev" hidden>上一条</button>
+        <button class="btn btn-next" id="btnNext" hidden>下一条</button>
+      </div>
     </div>
   </div>
 </section>
@@ -582,6 +596,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
       <button class="btn btn-primary" id="btnReport">生成审理意见</button>
       <button class="btn btn-ghost" id="btnCaseSummary">查看案卷</button>
       <button class="btn btn-ghost" id="btnExportSummary">导出结果</button>
+      <button class="btn btn-ghost" id="btnRestartSummary">重新审理</button>
     </div>
   </div>
 </section>
@@ -634,6 +649,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
       <button class="btn btn-primary btn-sm" id="btnEnding">查看账本最后一页</button>
       <button class="btn btn-ghost btn-sm" id="btnExportReport">导出审理意见</button>
       <button class="btn btn-ghost btn-sm" id="btnCaseReport">查看案卷</button>
+      <button class="btn btn-ghost btn-sm" id="btnRestartReport">重新审理</button>
     </div>
   </div>
 </section>
@@ -1234,16 +1250,45 @@ function renderNet(){
   if(!box) return;
   const map={};
   NET.nodes.forEach(function(n){map[n.id]=n;});
-  let s='<svg class="viz-svg" viewBox="0 0 840 440" role="img" aria-label="人物关系与资金路径">';
-  NET.edges.forEach(function(ed,index){
+  function hitNode(p,pad){
+    return NET.nodes.some(function(n){
+      return p.x>n.x-pad && p.x<n.x+n.w+pad && p.y>n.y-pad && p.y<n.y+n.h+pad;
+    });
+  }
+  const placed=[];
+  const edges=NET.edges.map(function(ed){
     const a=map[ed.a],b=map[ed.b];
-    if(!a||!b) return;
+    if(!a||!b) return null;
     const x1=a.x+a.w/2,y1=a.y+a.h/2,x2=b.x+b.w/2,y2=b.y+b.h/2;
-    const mx=(x1+x2)/2,my=(y1+y2)/2;
+    const w=Math.max(36,ed.t.length*11.6+12);
+    let label=null;
+    [0.5,0.38,0.62,0.3,0.7,0.24,0.76,0.18,0.82].forEach(function(t){
+      if(label) return;
+      const p={x:x1+(x2-x1)*t,y:y1+(y2-y1)*t};
+      if(hitNode(p,16)) return;
+      const clash=placed.some(function(q){
+        return Math.abs(q.x-p.x)<(q.w+w)/2+10 && Math.abs(q.y-p.y)<22;
+      });
+      if(clash) return;
+      label={x:p.x,y:p.y,w:w};
+    });
+    if(!label) label={x:(x1+x2)/2,y:(y1+y2)/2,w:w};
+    placed.push(label);
+    return {ed:ed,x1:x1,y1:y1,x2:x2,y2:y2,label:label};
+  }).filter(Boolean);
+
+  let s='<svg class="viz-svg" viewBox="0 0 840 440" role="img" aria-label="人物关系与资金路径">';
+  edges.forEach(function(L,index){
     s+='<g data-edge="'+index+'">';
-    s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(ed.dash?'rgba(158,43,37,.42)':'rgba(84,76,64,.42)')+'" stroke-width="'+(ed.dash?1.2:1.6)+'"'+(ed.dash?' stroke-dasharray="5 4"':'')+'/>';
-    s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="transparent" stroke-width="16" style="cursor:pointer"/>';
-    s+='<text class="vl-t" x="'+mx+'" y="'+(my-6)+'" text-anchor="middle">'+esc(ed.t)+'</text>';
+    s+='<line x1="'+L.x1+'" y1="'+L.y1+'" x2="'+L.x2+'" y2="'+L.y2+'" stroke="'+(L.ed.dash?'rgba(158,43,37,.38)':'rgba(84,76,64,.34)')+'" stroke-width="'+(L.ed.dash?1.2:1.5)+'"'+(L.ed.dash?' stroke-dasharray="5 4"':'')+'/>';
+    s+='<line x1="'+L.x1+'" y1="'+L.y1+'" x2="'+L.x2+'" y2="'+L.y2+'" stroke="transparent" stroke-width="16" style="cursor:pointer"/>';
+    s+='</g>';
+  });
+  edges.forEach(function(L){
+    const lb=L.label;
+    s+='<g data-edge="'+edges.indexOf(L)+'" style="pointer-events:all;cursor:pointer">';
+    s+='<rect x="'+(lb.x-lb.w/2)+'" y="'+(lb.y-10)+'" width="'+lb.w+'" height="20" rx="3" fill="#f4ecdc" fill-opacity="0.94"/>';
+    s+='<text class="vl" x="'+lb.x+'" y="'+(lb.y+3.5)+'" text-anchor="middle">'+esc(L.ed.t)+'</text>';
     s+='</g>';
   });
   NET.nodes.forEach(function(n){
@@ -1375,6 +1420,7 @@ function renderEntry(){
   $('#note').hidden=true;
   $('#note').innerHTML='';
   $('#btnNext').hidden=true;
+  $('#btnPrev').hidden=state.idx===0;
   const mark=$('#stampMark');
   mark.hidden=true;
   mark.className='stamp-mark';
@@ -1390,6 +1436,20 @@ function renderEntry(){
     rt.hidden=true;rt.textContent='';
   }
   checkReady();
+  const v=state.verdicts[e.id];
+  if(v){
+    $$('.chip').forEach(function(c){c.disabled=true;});
+    $$('.stamp-btn').forEach(function(b){b.classList.remove('ready');b.disabled=true;});
+    mark.textContent=v;
+    mark.className='stamp-mark '+vClass(v);
+    mark.hidden=false;
+    $('#trayHint').hidden=true;
+    $('#recallTag').hidden=true;
+    showNote(e,v);
+    const nb=$('#btnNext');
+    nb.hidden=false;
+    nb.textContent=state.idx===ENTRIES.length-1?'生成审理意见':'下一条';
+  }
   renderLedgerStrip();
 
   $('#pageLeft').scrollTop=0;
@@ -1593,6 +1653,17 @@ function load(){
 function clearSaved(){
   try{localStorage.removeItem(STORE_KEY);}catch(e){}
 }
+function restartAll(){
+  state.idx=0;
+  state.answers={};
+  state.verdicts={};
+  state.recallUsed=false;
+  state.recalled={};
+  clearSaved();
+  const rb=document.getElementById('btnResume');
+  if(rb) rb.remove();
+  show('cover');
+}
 
 /* ---------------- 交互绑定 ---------------- */
 $('#btnStart').addEventListener('click',function(){
@@ -1637,6 +1708,14 @@ $('#btnNext').addEventListener('click',function(){
   renderEntry();
 });
 
+$('#btnPrev').addEventListener('click',function(){
+  if(state.idx<=0) return;
+  state.idx--;
+  save();
+  playPage();
+  renderEntry();
+});
+
 $('#btnEvidence').addEventListener('click',function(){
   const e=ENTRIES[state.idx];
   if(!e.evidence) return;
@@ -1658,17 +1737,16 @@ $('#btnEnding').addEventListener('click',function(){
   playPage();
   show('ending');
 });
-$('#btnRestart').addEventListener('click',function(){
-  state.idx=0;
-  state.answers={};
-  state.verdicts={};
-  state.recallUsed=false;
-  state.recalled={};
-  clearSaved();
-  const rb=document.getElementById('btnResume');
-  if(rb) rb.remove();
-  show('cover');
+['btnRestart','btnRestartSummary','btnRestartReport'].forEach(function(id){
+  const b=document.getElementById(id);
+  if(b) b.addEventListener('click',restartAll);
 });
+const btnReset=document.getElementById('btnReset');
+if(btnReset){
+  btnReset.addEventListener('click',function(){
+    if(window.confirm('重新开始？当前审理结果将被清空，账本恢复初始状态。')) restartAll();
+  });
+}
 
 $('#btnRules').addEventListener('click',function(){openModal('rulesModal');});
 $('#btnRules2').addEventListener('click',function(){openModal('rulesModal');});
