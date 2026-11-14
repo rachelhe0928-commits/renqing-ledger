@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>人情账本 · 一次关于“人情”的审理实验</title>
+<meta name="description" content="以案件审理人员身份，逐条审理十二笔“人情”，理解受贿认定的对价关系、特定关系人、代持、借款型受贿、干股与期权腐败。">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0d0b;--bg2:#1b1713;
+  --paper:#f4ecdc;--paper2:#eadfc9;--paper3:#fbf6ea;
+  --ink:#221f1a;--ink2:#544c40;--muted:#8b8275;
+  --red:#9e2b25;--red2:#b8443c;--green:#3f5a4a;--amber:#a8752a;--blue:#2f4a6b;--gold:#b08d57;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 800px at 50% -10%, #2a231c 0%, transparent 62%),
+    radial-gradient(900px 600px at 100% 110%, #201b15 0%, transparent 55%),
+    var(--bg);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+[hidden]{display:none !important}
+.screen{display:none;min-height:100vh;padding:28px 18px;align-items:center;justify-content:center}
+.screen.active{display:flex;animation:fade .45s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pageIn{from{opacity:.35;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- cover ---------- */
+#cover{align-items:center}
+.cover-wrap{width:min(560px,94vw);text-align:center}
+.cover-kicker{font-size:11px;letter-spacing:.32em;color:var(--muted);margin-bottom:18px}
+.ledger-cover{
+  position:relative;padding:56px 40px 44px;border-radius:6px;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(176,141,87,.14), transparent 55%),
+    linear-gradient(145deg,#2b2219,#191410 70%);
+  border:1px solid rgba(176,141,87,.35);
+  box-shadow:0 40px 90px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.4) inset;
+}
+.ledger-cover::before{
+  content:"";position:absolute;inset:10px;border:1px solid rgba(176,141,87,.18);border-radius:3px;pointer-events:none;
+}
+.cover-seal{
+  position:absolute;top:20px;right:20px;width:42px;height:42px;display:grid;place-items:center;
+  border:2px solid rgba(184,68,60,.75);color:#c9635b;border-radius:4px;
+  font-family:"Songti SC","STSong","SimSun",serif;font-size:20px;transform:rotate(7deg);opacity:.85;
+}
+.cover-title{
+  font-family:"Songti SC","STSong","SimSun",serif;font-weight:700;
+  font-size:clamp(54px,9vw,88px);letter-spacing:.14em;color:#ece0c8;line-height:1.1;
+  text-shadow:0 2px 0 rgba(0,0,0,.4);
+}
+.cover-sub{margin-top:14px;font-size:15px;letter-spacing:.22em;color:#b9ab93}
+.cover-line{width:46px;height:2px;background:var(--red2);margin:24px auto}
+.cover-tag{font-family:"Songti SC","STSong","SimSun",serif;font-size:16px;line-height:1.8;color:#cbbfa9;letter-spacing:.06em}
+.cover-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+#btnStart{background:#e8dcc3;color:#221f1a;border-color:#e8dcc3;box-shadow:0 10px 30px rgba(0,0,0,.38)}
+#btnStart:hover{background:#f7eeda}
+.cover-foot{margin-top:22px;font-size:11px;letter-spacing:.1em;color:#7e7466;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cover-foot .dot{opacity:.5}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-block;padding:12px 26px;border:1px solid rgba(34,31,26,.32);border-radius:999px;
+  font-size:14px;letter-spacing:.1em;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--ink);color:var(--paper);border-color:var(--ink);box-shadow:0 10px 26px rgba(0,0,0,.28)}
+.btn-primary:hover{box-shadow:0 14px 30px rgba(0,0,0,.36)}
+.btn-ghost{color:var(--ink);border-color:rgba(34,31,26,.32)}
+
+/* ---------- identity ---------- */
+#identity{background:radial-gradient(900px 600px at 50% 20%, #241e18 0%, transparent 60%)}
+.identity-card{
+  position:relative;width:min(720px,94vw);background:var(--paper);padding:42px 46px;
+  box-shadow:0 40px 90px rgba(0,0,0,.55);border-radius:3px;
+}
+.identity-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--red)}
+.id-top{font-size:12px;letter-spacing:.26em;color:var(--red);margin-bottom:22px}
+.id-quote{
+  font-family:"Songti SC","STSong","SimSun",serif;font-size:clamp(17px,2.2vw,21px);
+  line-height:1.95;color:var(--ink);margin-bottom:28px;
+}
+.id-quote .dim{color:var(--ink2)}
+.id-fields{display:grid;gap:0;margin-bottom:30px;border-top:1px solid rgba(34,31,26,.16)}
+.id-fields div{display:flex;gap:18px;padding:12px 0;border-bottom:1px dashed rgba(34,31,26,.16);font-size:14px;line-height:1.6}
+.id-fields span{width:78px;flex:none;color:var(--muted);letter-spacing:.08em}
+.id-fields b{font-weight:600;color:var(--ink)}
+.id-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.id-foot small{font-size:11px;color:var(--muted);letter-spacing:.06em}
+
+/* ---------- ledger ---------- */
+#ledger{flex-direction:column;justify-content:flex-start;padding-top:16px}
+.topbar{width:min(1180px,94vw);display:flex;align-items:center;gap:18px;color:#cbbfa9;margin-bottom:12px}
+.brand{font-family:"Songti SC","STSong","SimSun",serif;font-size:17px;letter-spacing:.14em;color:#ece0c8;white-space:nowrap}
+.progress{flex:1;display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.1em;color:#9d917d;min-width:0}
+.bar{flex:1;height:2px;background:rgba(255,255,255,.12);max-width:280px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--red2);transition:width .4s ease}
+.tools{display:flex;gap:7px;flex:none}
+.tool{padding:6px 11px;border:1px solid rgba(255,255,255,.16);border-radius:999px;font-size:11.5px;color:#b9ab93;transition:.18s}
+.tool:hover{background:rgba(255,255,255,.08);color:#fff}
+
+.book{
+  position:relative;width:min(1180px,94vw);display:grid;grid-template-columns:1fr 1fr;
+  background:linear-gradient(90deg,#eee2cc,#f8f0e0 9%,#f8f0e0 91%,#e9dcc2);
+  border-radius:4px;box-shadow:0 42px 90px rgba(0,0,0,.62);
+  overflow:hidden;
+}
+.book.in{animation:pageIn .4s ease}
+.book::before{
+  content:"";position:absolute;left:50%;top:0;bottom:0;width:38px;transform:translateX(-50%);
+  background:linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,.07) 42%,rgba(0,0,0,.22) 50%,rgba(0,0,0,.07) 58%,rgba(0,0,0,0));
+  pointer-events:none;z-index:3;
+}
+.page{
+  position:relative;padding:38px 42px 32px;min-height:560px;max-height:78vh;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(90,70,50,.35) transparent;
+}
+.page::-webkit-scrollbar{width:6px}
+.page::-webkit-scrollbar-thumb{background:rgba(90,70,50,.28);border-radius:3px}
+.page-left{border-right:1px solid rgba(60,45,30,.12)}
+.page-left::before{content:"";position:absolute;left:26px;top:0;bottom:0;width:1px;background:rgba(158,43,37,.28);pointer-events:none}
+.page-label{font-size:10.5px;letter-spacing:.3em;color:var(--red);margin-bottom:20px}
+.entry-no{font-size:11.5px;letter-spacing:.24em;color:var(--muted);margin-bottom:7px}
+.entry-title{
+  font-family:"Songti SC","STSong","SimSun",serif;font-size:clamp(22px,2.4vw,28px);
+  line-height:1.35;margin-bottom:18px;color:var(--ink);font-weight:700;
+}
+.hand{
+  font-family:"Kaiti SC","STKaiti","KaiTi","Songti SC","STSong","SimSun",serif;
+  font-size:clamp(18px,1.65vw,21px);line-height:38px;color:#2a261f;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 37px,rgba(90,70,50,.16) 37px 38px);
+  background-position:0 3px;padding-bottom:4px;
+}
+.facts{margin-top:24px;display:grid;gap:8px}
+.fact{position:relative;padding-left:16px;font-size:12.8px;line-height:1.75;color:var(--ink2)}
+.fact::before{content:"";position:absolute;left:0;top:.72em;width:6px;height:1px;background:var(--red)}
+.evidence-btn{
+  margin-top:20px;padding:8px 14px;border:1px dashed rgba(158,43,37,.55);border-radius:3px;
+  font-size:12px;letter-spacing:.1em;color:var(--red);transition:.18s;
+}
+.evidence-btn:hover{background:rgba(158,43,37,.07)}
+
+.stamp-mark{
+  position:absolute;top:16px;right:22px;z-index:2;
+  font-family:"Songti SC","STSong","SimSun",serif;font-size:30px;letter-spacing:.12em;
+  padding:7px 12px;border:4px double currentColor;border-radius:5px;
+  transform:rotate(-12deg);opacity:.86;mix-blend-mode:multiply;pointer-events:none;
+  animation:stampIn .5s cubic-bezier(.2,1.4,.4,1);
+}
+.stamp-mark::after{
+  content:"";position:absolute;inset:-8px;border-radius:8px;
+  background:radial-gradient(circle at 30% 30%,currentColor 0 1px,transparent 2px),
+             radial-gradient(circle at 75% 70%,currentColor 0 1px,transparent 2px);
+  opacity:.18;
+}
+@keyframes stampIn{
+  0%{transform:scale(2.2) rotate(-28deg);opacity:0}
+  55%{transform:scale(.93) rotate(-12deg);opacity:1}
+  100%{transform:scale(1) rotate(-12deg);opacity:.86}
+}
+.v-renqing{color:var(--green)}
+.v-weiji{color:var(--amber)}
+.v-shouhui{color:var(--red)}
+.v-daihe{color:var(--blue)}
+
+.questions{display:grid;gap:18px}
+.q-block{animation:fade .3s ease}
+.q-label{font-size:13.5px;font-weight:600;line-height:1.5;margin-bottom:9px;color:var(--ink)}
+.q-label span{color:var(--red);font-family:"Songti SC","STSong",serif;margin-right:7px;font-size:12px;letter-spacing:.05em}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  padding:6px 11px;border:1px solid rgba(34,31,26,.26);border-radius:999px;
+  font-size:12.2px;line-height:1.4;color:var(--ink2);background:rgba(255,255,255,.22);transition:.15s;
+}
+.chip:hover{border-color:var(--ink);color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+.stamp-tray{margin-top:24px;padding-top:18px;border-top:1px dashed rgba(34,31,26,.22)}
+.tray-label{font-size:10.5px;letter-spacing:.3em;color:var(--muted);margin-bottom:10px}
+.stamps{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.stamp-btn{
+  height:56px;border:2px solid currentColor;border-radius:5px;background:rgba(255,255,255,.12);
+  font-family:"Songti SC","STSong","SimSun",serif;font-size:17px;letter-spacing:.16em;
+  opacity:.3;pointer-events:none;transition:.16s;
+}
+.stamp-btn.ready{opacity:1;pointer-events:auto}
+.stamp-btn.ready:hover{transform:translateY(-2px);box-shadow:0 7px 16px rgba(0,0,0,.13)}
+.stamp-btn[data-v="人情"]{color:var(--green)}
+.stamp-btn[data-v="违纪"]{color:var(--amber)}
+.stamp-btn[data-v="受贿"]{color:var(--red)}
+.stamp-btn[data-v="待核"]{color:var(--blue)}
+.tray-hint{font-size:11.5px;color:var(--muted);margin-top:8px;letter-spacing:.04em}
+
+.note{
+  margin-top:18px;padding:14px 16px;background:rgba(34,31,26,.045);
+  border-left:3px solid var(--red);font-size:12.8px;line-height:1.8;color:var(--ink);
+  animation:fade .35s ease;
+}
+.note-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:11.5px;color:var(--muted)}
+.note-ref{font-weight:700;letter-spacing:.08em;color:var(--red)}
+.note-ref.ok{color:var(--green)}
+.note-ref.diff{color:var(--amber)}
+.note p{margin:4px 0}
+.note b{font-weight:600}
+.note .range{color:var(--ink2)}
+.note .diff{color:var(--amber)}
+.btn-next{
+  width:100%;margin-top:16px;padding:13px;background:var(--ink);color:var(--paper);
+  border-radius:4px;letter-spacing:.14em;font-size:13.5px;transition:.18s;
+}
+.btn-next:hover{background:#000;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+
+/* ---------- summary ---------- */
+#summary{background:radial-gradient(900px 600px at 50% 10%, #262019 0%, transparent 60%)}
+.panel{width:min(980px,94vw);background:var(--paper);padding:42px 44px;box-shadow:0 40px 90px rgba(0,0,0,.55);border-radius:3px}
+.panel-kicker{font-size:11px;letter-spacing:.3em;color:var(--red);margin-bottom:8px}
+.panel h2{font-family:"Songti SC","STSong","SimSun",serif;font-size:clamp(24px,3vw,30px);margin-bottom:10px}
+.summary-line{font-size:13px;color:var(--ink2);margin-bottom:22px;letter-spacing:.04em}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:26px}
+.sum-card{display:flex;align-items:center;gap:9px;padding:11px 12px;border:1px solid rgba(34,31,26,.14);background:rgba(255,255,255,.32)}
+.sum-no{font-family:"Songti SC","STSong",serif;font-size:17px;color:var(--muted);width:20px;flex:none;text-align:center}
+.sum-title{flex:1;font-size:12.5px;line-height:1.4}
+.sum-badge{flex:none;font-size:11.5px;padding:2px 8px;border:1px solid currentColor;border-radius:999px;letter-spacing:.06em}
+
+/* ---------- report ---------- */
+#report{align-items:flex-start;padding:40px 18px;background:radial-gradient(900px 600px at 50% 0%, #262019 0%, transparent 60%)}
+.report-paper{
+  position:relative;width:min(900px,94vw);background:var(--paper3);padding:46px 52px 40px;
+  box-shadow:0 40px 90px rgba(0,0,0,.58);border-radius:2px;
+}
+.report-paper::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:var(--red)}
+.report-head{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;border-bottom:1px solid rgba(34,31,26,.2);padding-bottom:18px;margin-bottom:22px}
+.report-kicker{font-size:10.5px;letter-spacing:.26em;color:var(--red)}
+.report-head h2{font-family:"Songti SC","STSong","SimSun",serif;font-size:clamp(28px,4vw,36px);letter-spacing:.3em;margin-top:8px}
+.report-meta{font-size:11.5px;line-height:1.95;color:var(--ink2);text-align:right;flex:none}
+.report-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:18px 0 26px}
+.stat{padding:14px 14px 12px;background:rgba(34,31,26,.045);border-top:2px solid var(--ink)}
+.stat b{display:block;font-family:"Songti SC","STSong",serif;font-size:23px;line-height:1.2;margin-bottom:3px}
+.stat span{font-size:10.5px;color:var(--ink2);letter-spacing:.1em}
+.report-columns{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-bottom:22px}
+.report-columns h3,.report-section h3{font-size:12.5px;letter-spacing:.2em;color:var(--red);margin-bottom:8px}
+.report-columns p,.report-section li{font-size:13.2px;line-height:1.95;color:var(--ink)}
+.report-section{margin-bottom:18px}
+.report-section ul{padding-left:18px}
+.report-foot{font-size:10.5px;line-height:1.8;color:var(--muted);border-top:1px dashed rgba(34,31,26,.25);padding-top:12px;margin-top:6px}
+.report-paper .btn{margin-top:20px}
+
+/* ---------- ending ---------- */
+#ending{align-items:flex-start;padding:46px 18px;background:radial-gradient(900px 700px at 50% 0%, #262019 0%, transparent 60%)}
+.ending-wrap{width:min(1000px,94vw);display:grid;gap:26px}
+.last-page{position:relative;background:var(--paper);padding:46px 44px;box-shadow:0 40px 90px rgba(0,0,0,.55);text-align:center;border-radius:3px}
+.last-page::before{content:"";position:absolute;left:26px;top:0;bottom:0;width:1px;background:rgba(158,43,37,.25)}
+.last-quote{font-family:"Kaiti SC","STKaiti","KaiTi","Songti SC","STSong",serif;font-size:clamp(21px,3vw,29px);line-height:1.9;color:var(--ink);margin:18px 0 14px}
+.last-note{font-size:13.5px;letter-spacing:.18em;color:var(--red)}
+.knowledge h2{font-family:"Songti SC","STSong",serif;color:#ece0c8;font-size:21px;letter-spacing:.14em;margin-bottom:14px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.kcard{background:var(--paper);padding:18px 20px;border-left:3px solid var(--red);border-radius:2px}
+.kcard h3{font-size:14.5px;margin-bottom:6px;letter-spacing:.04em}
+.kcard p{font-size:12.8px;line-height:1.8;color:var(--ink2)}
+.kcard em{display:block;font-style:normal;margin-top:7px;font-size:11.5px;color:var(--red);line-height:1.7}
+.ending-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding-bottom:10px}
+.ending-actions .btn{color:#d8cbb4;border-color:rgba(216,203,180,.3)}
+.ending-actions .btn:hover{background:rgba(255,255,255,.06)}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(8,7,6,.74);backdrop-filter:blur(6px)}
+.modal.open{display:flex;animation:fade .25s ease}
+.modal-card{position:relative;width:min(760px,96vw);max-height:86vh;overflow-y:auto;background:var(--paper);padding:32px 34px;box-shadow:0 40px 90px rgba(0,0,0,.6);border-radius:3px}
+.modal-close{position:absolute;top:8px;right:14px;font-size:26px;line-height:1;color:var(--ink2);padding:4px}
+.modal-close:hover{color:var(--red)}
+.modal-card h2{font-family:"Songti SC","STSong","SimSun",serif;font-size:23px;margin-bottom:6px;letter-spacing:.06em}
+.modal-sub{font-size:12.5px;line-height:1.8;color:var(--ink2);margin-bottom:18px}
+.rule-tree{background:#221f1a;color:#e9dcc4;padding:16px 18px;border-radius:3px;font-family:ui-monospace,Menlo,Consolas,"Courier New",monospace;font-size:12px;line-height:1.95;overflow-x:auto;white-space:pre}
+.modal-card h3{font-size:13.5px;margin:18px 0 6px;color:var(--red);letter-spacing:.08em}
+.modal-card p,.modal-card li{font-size:13px;line-height:1.9;color:var(--ink)}
+.modal-card ul{padding-left:18px;margin:4px 0 8px}
+.evidence-body ul{padding-left:18px;margin:10px 0}
+.evidence-body li{font-size:13.2px;line-height:1.9}
+.ev-note{margin-top:12px;padding:10px 12px;background:rgba(158,43,37,.07);border-left:3px solid var(--red);font-size:12.5px;line-height:1.8;color:var(--ink2)}
+
+/* ---------- case file / visuals ---------- */
+#case{flex-direction:column;justify-content:flex-start;padding:34px 18px 50px}
+.case-wrap{width:min(1000px,94vw);background:var(--paper);padding:40px 44px 34px;box-shadow:0 40px 90px rgba(0,0,0,.58);border-radius:3px}
+.case-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid var(--red);padding-bottom:14px;margin-bottom:8px}
+.case-kicker{font-size:10.5px;letter-spacing:.28em;color:var(--red);margin-bottom:6px}
+.case-head h2{font-family:"Songti SC","STSong","SimSun",serif;font-size:clamp(22px,3vw,28px);letter-spacing:.16em}
+.case-desc{font-size:12.5px;line-height:1.9;color:var(--ink2);margin:12px 0 18px}
+.case-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{padding:6px 13px;border:1px solid rgba(34,31,26,.22);border-radius:999px;font-size:12px;color:var(--ink2);transition:.16s}
+.tab:hover{border-color:var(--ink);color:var(--ink)}
+.tab.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.viz-pane{display:none;animation:fade .3s ease}
+.viz-pane.on{display:block}
+.howto{font-size:11.5px;color:var(--muted);line-height:1.8;margin-top:10px;letter-spacing:.03em}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);margin:10px 0 4px}
+.legend i{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:6px;border-radius:2px}
+
+.viz-svg{width:100%;height:auto;display:block}
+.vn{cursor:pointer}
+.vn rect{transition:filter .18s ease}
+.vn:hover rect{filter:brightness(1.18)}
+.vtext{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;fill:#f4ecdc;font-size:13px;text-anchor:middle;dominant-baseline:middle;pointer-events:none;letter-spacing:.06em}
+.vsub{font-size:10.5px;fill:rgba(244,236,220,.7)}
+.vl{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:11px;fill:#544c40}
+.vl-t{font-size:10.5px;fill:#8b8275}
+
+#tlBox{position:relative;padding:16px 0 4px}
+#tlBox::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(34,31,26,.2)}
+.tl-track{position:relative;display:flex;height:210px}
+.tl-track::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(158,43,37,.35)}
+
+/* ---------- dual ledger ---------- */
+.ledger-strip{margin-top:22px;padding-top:14px;border-top:1px solid rgba(34,31,26,.14)}
+.strip-label{font-size:10.5px;letter-spacing:.26em;color:var(--muted);margin-bottom:9px}
+.rows{display:grid;gap:5px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:8px;font-size:11.8px;color:var(--ink2);animation:fade .3s ease}
+.row .r-idx{width:14px;color:var(--muted);font-family:"Songti SC",serif;flex:none}
+.row .r-t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .r-v{flex:none;font-size:11px;padding:1px 7px;border:1px solid currentColor;border-radius:999px}
+.empty-row{font-size:11.5px;color:var(--muted);padding:4px 0}
+
+/* ---------- summary only ---------- */
+.screen-alone{display:none;position:absolute;top:10px;right:12px;font-size:10.5px;letter-spacing:.18em;color:rgba(244,236,220,.4)}
+
+/* ---------- glossary ---------- */
+.term{border-bottom:1px dotted rgba(158,43,37,.55);cursor:help;color:inherit}
+.term:hover{color:var(--red)}
+.alt-btn{margin-top:12px;padding:7px 12px;border:1px dashed rgba(47,74,107,.5);border-radius:3px;font-size:11.5px;color:var(--blue);transition:.16s}
+.alt-btn:hover{background:rgba(47,74,107,.07)}
+.alt-body{margin-top:10px;padding:12px 14px;background:rgba(47,74,107,.055);border-left:3px solid var(--blue);font-size:12.5px;line-height:1.8;color:var(--ink2);animation:fade .3s ease}
+.alt-body b{color:var(--ink)}
+.recall-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding:10px 12px;border:1px dashed rgba(168,117,42,.55);background:rgba(168,117,42,.06)}
+.recall-bar p{flex:1;min-width:180px;font-size:11.8px;line-height:1.7;color:var(--ink2)}
+.recall-btn{padding:6px 12px;border:1px solid var(--amber);border-radius:3px;font-size:11.5px;color:var(--amber);background:rgba(255,255,255,.4)}
+.recall-btn:hover{background:rgba(168,117,42,.12)}
+.recall-btn:disabled{opacity:.4;cursor:not-allowed}
+.tag-warn{display:inline-block;margin-top:10px;font-size:11px;color:var(--amber);letter-spacing:.06em}
+
+/* ---------- report extras ---------- */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:20px}
+.kpi{padding:12px 14px;background:rgba(34,31,26,.045);border-left:3px solid var(--ink)}
+.kpi b{display:block;font-family:"Songti SC","STSong",serif;font-size:19px;margin-bottom:2px}
+.kpi span{font-size:10.5px;color:var(--ink2);letter-spacing:.08em}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.paper-col{padding:16px 18px;background:rgba(255,255,255,.4);border:1px solid rgba(34,31,26,.14);border-top:2px solid var(--ink)}
+.paper-col h4{font-size:12px;letter-spacing:.2em;color:var(--red);margin-bottom:10px}
+.paper-col li{font-size:11.8px;line-height:1.75;color:var(--ink2);list-style:none;padding:3px 0;border-bottom:1px dotted rgba(34,31,26,.1);display:flex;gap:8px}
+.paper-col li i{font-style:normal;color:var(--muted);flex:none}
+.verdict-hero{padding:20px 22px;background:rgba(158,43,37,.06);border-left:4px solid var(--red);margin-bottom:16px}
+.verdict-hero h3{font-family:"Songti SC","STSong",serif;font-size:19px;letter-spacing:.1em;margin-bottom:7px}
+.verdict-hero p{font-size:12.5px;line-height:1.85;color:var(--ink2)}
+.export-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.btn-sm{padding:8px 16px;font-size:12px;border-radius:3px}
+
+/* ---------- ending extras ---------- */
+.ending-quote{text-align:center;font-size:12px;color:#9d917d;letter-spacing:.16em}
+.chart{margin-top:18px;background:rgba(255,255,255,.32);border:1px solid rgba(34,31,26,.12);padding:16px 18px}
+.chart h4{font-size:12px;letter-spacing:.2em;color:var(--red);margin-bottom:10px}
+.bars{display:grid;gap:7px}
+.bar-row{display:flex;align-items:center;gap:9px;font-size:11.5px;color:var(--ink2)}
+.bar-row em{font-style:normal;width:24px;flex:none;font-family:"Songti SC",serif;color:var(--muted)}
+.bar-row .b-t{width:96px;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row .b-bg{flex:1;height:8px;background:rgba(34,31,26,.09);border-radius:4px;overflow:hidden}
+.bar-row .b-fill{display:block;height:100%;border-radius:4px;background:var(--red2);transition:width .5s ease}
+.bar-row .b-v{width:48px;text-align:right;flex:none;font-size:10.5px;color:var(--muted)}
+
+/* ---------- fx ---------- */
+.ink-splash{position:fixed;inset:0;z-index:70;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(12,10,8,.96) 0%,rgba(12,10,8,.96) 42%,rgba(12,10,8,0) 100%);animation:inkOut .8s ease forwards}
+@keyframes inkOut{from{opacity:0;transform:scale(.2)}35%{opacity:1}to{opacity:0;transform:scale(1.6)}}
+.modal-card.flip{animation:cardFlip .45s ease}
+@keyframes cardFlip{from{transform:perspective(900px) rotateY(-58deg);opacity:.2}to{transform:none;opacity:1}}
+.recalled{outline:2px dashed rgba(168,117,42,.55);outline-offset:-6px}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .screen{padding:18px 12px;align-items:flex-start}
+  #ledger{padding-top:10px}
+  .topbar{flex-wrap:wrap;gap:10px}
+  .progress{order:3;width:100%;flex:1 1 100%}
+  .tools{margin-left:auto}
+  .book{grid-template-columns:1fr}
+  .book::before{display:none}
+  .page{max-height:none;min-height:auto;padding:28px 24px 30px}
+  .page-left{border-right:none;border-bottom:1px solid rgba(60,45,30,.15)}
+  .page-left::before{left:12px}
+  .stamp-mark{top:10px;right:12px;font-size:23px;padding:5px 9px}
+  .summary-grid{grid-template-columns:1fr 1fr}
+  .report-stats{grid-template-columns:1fr 1fr}
+  .report-columns{grid-template-columns:1fr}
+  .cards{grid-template-columns:1fr}
+  .report-paper{padding:30px 22px 28px}
+  .report-head{flex-direction:column;gap:12px}
+  .report-meta{text-align:left}
+  .stamps{grid-template-columns:1fr 1fr}
+  .identity-card{padding:30px 24px}
+  .panel{padding:30px 24px}
+  .last-page{padding:34px 24px}
+  .case-wrap{padding:26px 20px}
+  .case-head{flex-direction:column;gap:8px}
+  .kpis{grid-template-columns:1fr}
+  .duo{grid-template-columns:1fr}
+  .ledger-strip{display:none}
+  .tl-track{height:180px}
+  .bar-row .b-t{width:76px}
+}
+@media (max-width:420px){
+  .cover-title{letter-spacing:.08em}
+  .summary-grid{grid-template-columns:1fr}
+  .report-stats{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 封面 ============ -->
+<section class="screen active" id="cover">
+  <div class="cover-wrap">
+    <div class="cover-kicker">一念成码 · VIBE CODING 黑客松</div>
+    <div class="ledger-cover">
+      <div class="cover-seal">审</div>
+      <h1 class="cover-title">人情账本</h1>
+      <div class="cover-sub">一次关于“人情”的审理实验</div>
+      <div class="cover-line"></div>
+      <p class="cover-tag">他记了十年人情，<br>法律只用一晚算清。</p>
+      <div class="cover-actions">
+        <button class="btn btn-primary" id="btnStart">翻开账本</button>
+        <button class="btn" id="btnCaseCover" style="color:#d8cbb4;border-color:rgba(216,203,180,.34)">先看案卷</button>
+      </div>
+    </div>
+    <div class="cover-foot">
+      <span>纪检监察学 · 专业知识科普</span>
+      <span class="dot">·</span>
+      <span>教学模拟，人物情节均为虚构</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 身份 ============ -->
+<section class="screen" id="identity">
+  <div class="identity-card">
+    <div class="id-top">市纪委监委 · 案件审理室</div>
+    <p class="id-quote">
+      “人已经留置了。这是他十年记的人情账，十二条。<br>
+      你不要急着恨他，也不要急着同情他。<br>
+      你只做一件事——每一条，给它归位。”
+      <br><span class="dim" style="font-size:13px;letter-spacing:.08em">—— 师傅把账本推过来时，只说了这些</span>
+    </p>
+    <div class="id-fields">
+      <div><span>你的身份</span><b>审理室新进干部</b></div>
+      <div><span>你的权限</span><b>阅卷 · 提问 · 提出定性意见</b></div>
+      <div><span>你的产出</span><b>一份《审理意见》</b></div>
+    </div>
+    <div class="id-foot">
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btnBegin">开始阅卷</button>
+        <button class="btn btn-ghost" id="btnCaseIdentity">查看案卷</button>
+      </div>
+      <small>审理，是案件查办的最后一道内部关口：<br>事实清不清、证据够不够、定性准不准、处理当不当。</small>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 审理 ============ -->
+<section class="screen" id="ledger">
+  <header class="topbar">
+    <div class="brand">人情账本</div>
+    <div class="progress">
+      <span id="progressText">第 1 / 12 条</span>
+      <div class="bar"><i id="progressBar"></i></div>
+    </div>
+    <div class="tools">
+      <button class="tool" id="btnCase">案卷</button>
+      <button class="tool" id="btnRules">规则</button>
+      <button class="tool" id="btnAbout">说明</button>
+      <button class="tool" id="btnMute">音效：开</button>
+    </div>
+  </header>
+
+  <div class="book" id="book">
+    <div class="page page-left" id="pageLeft">
+      <div class="page-label">他 的 手 写 账</div>
+      <div class="entry-no" id="entryNo">第一条</div>
+      <h2 class="entry-title" id="entryTitle"></h2>
+      <p class="hand" id="entryHand"></p>
+      <div class="facts" id="entryFacts"></div>
+      <button class="evidence-btn" id="btnEvidence" hidden>调取证据</button>
+      <div class="stamp-mark" id="stampMark" hidden></div>
+    </div>
+
+    <div class="page page-right" id="pageRight">
+      <div class="page-label">审 理 提 纲</div>
+      <div class="questions" id="questions"></div>
+
+      <div class="stamp-tray">
+        <div class="tray-label">盖 章 定 性</div>
+        <div class="stamps" id="stamps">
+          <button class="stamp-btn" data-v="人情">人情</button>
+          <button class="stamp-btn" data-v="违纪">违纪</button>
+          <button class="stamp-btn" data-v="受贿">受贿</button>
+          <button class="stamp-btn" data-v="待核">待核</button>
+        </div>
+        <div class="tray-hint" id="trayHint">请先回答上方三个问题</div>
+        <div class="tag-warn" id="recallTag" hidden></div>
+      </div>
+
+      <div class="note" id="note" hidden></div>
+      <div class="ledger-strip" id="ledgerStrip" hidden>
+        <div class="strip-label">法 律 账 · 已 记 录</div>
+        <div class="rows" id="ledgerRows"></div>
+        <div class="tray-hint" id="ledgerSum"></div>
+      </div>
+      <button class="btn btn-next" id="btnNext" hidden>下一条</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 案卷 ============ -->
+<section class="screen" id="case">
+  <div class="case-wrap">
+    <div class="case-head">
+      <div>
+        <div class="case-kicker">案 卷 摘 要 · 教 学 模 拟</div>
+        <h2>周某某案 · 结构与时间</h2>
+      </div>
+      <button id="btnCaseClose" style="padding:6px 13px;border:1px solid rgba(34,31,26,.24);border-radius:999px;font-size:12px;color:#544c40">返回</button>
+    </div>
+    <p class="case-desc">审理一份账本，先要看清两件事：<b>钱流经谁</b>、<b>事发生在什么时候</b>。前者决定认定路径，后者决定对价关系。下列图示由账本内容整理，非真实案件。</p>
+
+    <div class="case-nav">
+      <button class="tab on" data-pane="paneNet">人物关系与资金路径</button>
+      <button class="tab" data-pane="paneTime">十年时间轴</button>
+    </div>
+
+    <div class="viz-pane on" id="paneNet">
+      <div class="legend">
+        <span><i style="background:#9e2b25"></i>核心人物</span>
+        <span><i style="background:#3f5a4a"></i>近亲属</span>
+        <span><i style="background:#a8752a"></i>请托人 / 企业</span>
+        <span><i style="background:#2f4a6b"></i>特定关系人</span>
+        <span><i style="background:#b08d57"></i>代持人</span>
+      </div>
+      <div id="netBox"></div>
+      <p class="howto" id="netDetail">点击人物或连线，查看这一层关系在账本里对应哪几条。</p>
+    </div>
+
+    <div class="viz-pane" id="paneTime">
+      <div class="legend">
+        <span><i style="background:#9e2b25"></i>受贿</span>
+        <span><i style="background:#a8752a"></i>违纪</span>
+        <span><i style="background:#3f5a4a"></i>人情</span>
+        <span><i style="background:#2f4a6b"></i>待核</span>
+        <span><i style="background:#544c40"></i>职务节点</span>
+      </div>
+      <div id="tlBox"><div class="tl-track" id="tlTrack"></div></div>
+      <p class="howto" id="tlDetail">点击节点查看对应账目与时间关系。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 汇总 ============ -->
+<section class="screen" id="summary">
+  <div class="panel">
+    <div class="panel-kicker">阅 卷 完 毕</div>
+    <h2>十二条账目，已全部归位</h2>
+    <div class="summary-line" id="summaryLine"></div>
+    <div class="summary-grid" id="summaryGrid"></div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="btnReport">生成审理意见</button>
+      <button class="btn btn-ghost" id="btnCaseSummary">查看案卷</button>
+      <button class="btn btn-ghost" id="btnExportSummary">导出结果</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 审理意见 ============ -->
+<section class="screen" id="report">
+  <div class="report-paper">
+    <div class="report-head">
+      <div>
+        <div class="report-kicker">案件审理室 · 教学模拟</div>
+        <h2>审 理 意 见</h2>
+      </div>
+      <div class="report-meta">
+        <div>被审查调查人：周某某</div>
+        <div>审理人：你</div>
+        <div id="reportDate"></div>
+      </div>
+    </div>
+
+    <div class="report-stats" id="reportStats"></div>
+    <div class="kpis" id="kpiRow"></div>
+    <div class="verdict-hero" id="verdictHero"></div>
+
+    <div class="duo">
+      <div class="paper-col"><h4>他 的 人 情 账</h4><ul id="hisBook"></ul></div>
+      <div class="paper-col"><h4>你 的 法 律 账</h4><ul id="lawBook"></ul></div>
+    </div>
+
+    <div class="report-columns">
+      <div><h3>纪律责任</h3><p id="disciplineText"></p></div>
+      <div><h3>法律责任</h3><p id="legalText"></p></div>
+    </div>
+
+    <div class="report-section">
+      <h3>证据缺口</h3>
+      <ul id="gapList"></ul>
+    </div>
+
+    <div class="report-section">
+      <h3>复核提示</h3>
+      <ul id="diffList"></ul>
+    </div>
+
+    <div class="report-foot">
+      本意见仅用于教学演示，不构成法律意见。人物、情节均为虚构，具体定性以司法认定为准。<br>
+      参考一致性：<span id="matchText"></span>
+    </div>
+
+    <div class="export-row">
+      <button class="btn btn-primary btn-sm" id="btnEnding">查看账本最后一页</button>
+      <button class="btn btn-ghost btn-sm" id="btnExportReport">导出审理意见</button>
+      <button class="btn btn-ghost btn-sm" id="btnCaseReport">查看案卷</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 最后一页 ============ -->
+<section class="screen" id="ending">
+  <div class="ending-wrap">
+    <div class="last-page">
+      <div class="page-label">账 本 最 后 一 页</div>
+      <p class="last-quote">“这些人情，我都记着，<br>等我退了，慢慢还。”</p>
+      <p class="last-note">人情可以慢慢还，对价不能。</p>
+    </div>
+
+    <div class="knowledge">
+      <h2>六个必须记住的判断</h2>
+      <div class="cards">
+        <div class="kcard">
+          <h3>权钱交易</h3>
+          <p>受贿的本质不是“收了钱”，而是“钱”与“权”之间形成了对价关系。</p>
+          <em>常见误解：不收现金就没事。</em>
+        </div>
+        <div class="kcard">
+          <h3>特定关系人</h3>
+          <p>配偶、子女、情人等特定关系人收钱，本人明知并为其谋利，一样可能构成受贿。</p>
+          <em>常见误解：挂在家人名下就安全。</em>
+        </div>
+        <div class="kcard">
+          <h3>代持</h3>
+          <p>房子登记在别人名下，但你能住、能收租、能卖，法律上仍可能是你的。</p>
+          <em>常见误解：登记是谁的就是谁的。</em>
+        </div>
+        <div class="kcard">
+          <h3>借款型受贿</h3>
+          <p>有借条不等于借款。关键看有没有归还意思、有没有归还能力、为什么一直不还。</p>
+          <em>常见误解：打了借条就是民事借贷。</em>
+        </div>
+        <div class="kcard">
+          <h3>期权腐败</h3>
+          <p>在职办事、离职收钱，时间差不是防火墙。关键看离职前后有没有约定或默契。</p>
+          <em>常见误解：退休就“安全着陆”。</em>
+        </div>
+        <div class="kcard" style="border-left-color:var(--gold)">
+          <h3>纪法贯通</h3>
+          <p>同一个行为，可能同时触发纪律责任与法律责任。纪在法前，纪严于法。</p>
+          <em>这也是审理意见要分两栏写的原因。</em>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart" id="amountChart"></div>
+
+    <div class="ending-actions">
+      <button class="btn" id="btnRestart">重新审理</button>
+      <button class="btn" id="btnExportEnding">导出审理意见</button>
+      <button class="btn" id="btnCaseEnding">查看案卷</button>
+      <button class="btn" id="btnRules2">查看规则</button>
+      <button class="btn" id="btnAbout2">作品说明</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 规则弹窗 ============ -->
+<div class="modal" id="rulesModal" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" data-close="rulesModal" aria-label="关闭">×</button>
+    <h2>判定规则</h2>
+    <p class="modal-sub">三个问题，对应受贿认定的三个核心：主体、职务行为、利益对价。规则是简化的，真实案件远比这复杂。</p>
+    <pre class="rule-tree">无请托 + 正常往来                  → 人情
+明确请托 + 任一异常                → 受贿
+职务影响 + 超常 / 未还 / 无劳务     → 违纪（可能转化）
+职务影响 + 时间吻合                → 待核
+职务影响 + 正常往来                → 人情
+明确请托 + 正常往来                → 违纪（情节较轻）
+任一“说不清”                       → 待核</pre>
+    <h3>三个问题分别在问什么</h3>
+    <ul>
+      <li><b>谁收的：</b>本人、近亲属、情人等特定关系人，还是他人代持。主体不同，认定路径不同。</li>
+      <li><b>有没有请托：</b>有没有具体的谋利事项。这是“权钱交易”的核心连接点。</li>
+      <li><b>是否异常：</b>金额是否超出正常往来、是否长期不还、是否未提供真实劳务、是否与职务行为时间高度吻合。</li>
+    </ul>
+    <h3>为什么用“区间”而不是“标准答案”</h3>
+    <p>真实案件里，同样的事实，可能因为证据、情节、认罪态度不同，得出不同结论。作品给的是“参考定性”和“可能的区间”，不是判决书。争议条目允许不同判断，这正是专业性的体现。</p>
+    <h3>主要依据</h3>
+    <ul>
+      <li>《中华人民共和国刑法》第三百八十五条（受贿罪）</li>
+      <li>“两高”《关于办理受贿刑事案件适用法律若干问题的意见》（特定关系人、干股、以借为名、离职后收受等）</li>
+      <li>《中国共产党纪律处分条例》廉洁纪律相关规定</li>
+      <li>中央八项规定精神</li>
+      <li>《中华人民共和国监察法》关于留置与调查的规定</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 作品说明弹窗 ============ -->
+<div class="modal" id="aboutModal" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" data-close="aboutModal" aria-label="关闭">×</button>
+    <h2>作品说明</h2>
+    <p class="modal-sub">纪检监察学 · 专业知识科普 · 教学模拟</p>
+    <h3>这是什么</h3>
+    <p>《人情账本》是一件面向公众的互动审理实验。你以纪检监察机关案件审理人员的身份，对十二笔“人情往来”逐条判断：正常人情、违规违纪、涉嫌受贿，还是证据不足待核。</p>
+    <h3>想讲清什么</h3>
+    <p>公众对受贿最常见的误解是“只要不收现金就没事”。作品想说明：受贿的本质是“权”与“钱”形成对价；特定关系人收受、代持、借款型受贿、干股、期权腐败，都是隐形变异的形态。判断的关键，不在形式，而在实质。</p>
+    <h3>为什么是“审理”视角</h3>
+    <p>审理是纪检监察案件查办的最后一道内部关口：事实清不清、证据够不够、定性准不准、处理当不当。让体验者坐在审理席上，比让他扮演贪官或道德裁判，更接近专业知识本身。</p>
+    <h3>专业依据</h3>
+    <ul>
+      <li>《中华人民共和国刑法》第三百八十五条</li>
+      <li>“两高”《关于办理受贿刑事案件适用法律若干问题的意见》</li>
+      <li>《中国共产党纪律处分条例》廉洁纪律相关规定</li>
+      <li>中央八项规定精神</li>
+      <li>《中华人民共和国监察法》</li>
+    </ul>
+    <h3>技术说明</h3>
+    <p>单文件 HTML，全部样式、脚本、音效均在本地生成，无任何外部图片、字体或网络请求。双击即可离线运行，也可部署为静态网页。判定逻辑是一套可解释的规则引擎，答案可以回溯到事实与规则。</p>
+    <h3>免责声明</h3>
+    <p>本作品为教学模拟，人物、单位、情节均为虚构，不影射任何真实案件。作品中的定性意见不构成法律意见，具体定性以司法认定为准。</p>
+  </div>
+</div>
+
+<!-- ============ 证据弹窗 ============ -->
+<div class="modal" id="evidenceModal" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" data-close="evidenceModal" aria-label="关闭">×</button>
+    <h2></h2>
+    <p class="modal-sub">调取到的证据材料（教学模拟）</p>
+    <div class="evidence-body"></div>
+  </div>
+</div>
+
+<!-- ============ 术语弹窗 ============ -->
+<div class="modal" id="glossaryModal" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-close" data-close="glossaryModal" aria-label="关闭">×</button>
+    <h2></h2>
+    <p class="modal-sub">术语释义 · 专业依据</p>
+    <div class="evidence-body"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------------- 三个问题的选项 ---------------- */
+const Q1=[
+  {type:'self',label:'本人'},
+  {type:'relative',label:'配偶、子女、父母等近亲属'},
+  {type:'lover',label:'情人等特定关系人'},
+  {type:'nominee',label:'他人代持或挂名'}
+];
+const Q2=[
+  {type:'request',label:'有明确请托'},
+  {type:'influence',label:'有职务影响，但无具体事项'},
+  {type:'none',label:'没有'},
+  {type:'unclear',label:'说不清'}
+];
+const Q3=[
+  {type:'abnormal',label:'明显超出正常往来'},
+  {type:'unreturned',label:'长期未还，且无还款能力'},
+  {type:'noservice',label:'未实际提供劳务或对价'},
+  {type:'timing',label:'与职务行为时间高度吻合'},
+  {type:'normal',label:'在正常礼尚往来范围'},
+  {type:'unclear',label:'说不清'}
+];
+
+/* ---------------- 十二条账目 ---------------- */
+const ENTRIES=[
+  {
+    id:1,no:'第一条',title:'婚礼上的两千块',
+    hand:'老同学的儿子结婚，我随了两千。两年后，他公司中了我分管的一个小项目。我当时想，随礼是随礼，招标是招标，两码事。',
+    facts:['随礼 2000 元，双方多年有来有往','两年后，对方公司中标其分管项目','招标程序表面合规，无直接干预记录'],
+    amount:0.2,
+    truth:{who:'self',ask:'influence',abnormal:'timing'},
+    reason:'正常礼尚往来与“感情投资”的界限，关键看有无具体请托、金额是否明显异常、时间上是否与职务行为形成对价。本案金额不大、有来有往，但中标时间接近，不能仅凭随礼认定受贿，需进一步核查招标过程与双方关系。',
+    basis:'《中国共产党纪律处分条例》廉洁纪律；受贿认定中的“对价关系”判断',
+    gap:'调取招标文件、评标记录、双方关于随礼性质的言词证据。',
+    range:'正常人情 / 待核',
+    evidence:null
+  },
+  {
+    id:2,no:'第二条',title:'父亲病房里的三万元',
+    hand:'父亲住院，老周说他认识院长，安排了单间，还请了外面的专家。三万元专家费，他直接结了。我说要还，他说“老人的事，别谈钱”。',
+    facts:['老板支付专家费 3 万元，未走医院账','老板随后请托其协调一笔贷款','本人知情，未退还'],
+    amount:3,
+    truth:{who:'relative',ask:'request',abnormal:'abnormal'},
+    reason:'由他人支付应当由本人承担的费用，属于财产性利益。老板有具体请托，本人知情并为其谋利，符合受贿的权钱交易本质；是否由本人亲手收受，不影响认定。',
+    basis:'《刑法》第385条；“两高”《关于办理受贿刑事案件适用法律若干问题的意见》',
+    gap:'调取医院收费记录、老板公司账目、贷款协调的审批材料。',
+    range:'违纪 / 受贿',
+    evidence:{
+      title:'医院收费单与付款记录',
+      points:['专家费 30,000 元，付款方为老板控制的公司','付款当日，老板请托协调一笔 800 万元贷款','本人知情，未退还，也未在个人事项报告中说明'],
+      note:'证明“财产性利益”与请托时间高度吻合。'
+    }
+  },
+  {
+    id:3,no:'第三条',title:'一张写了十年的借条',
+    hand:'买房差钱，老周主动借我一百万，打了借条。我想着，有借条就不算收钱。后来一直没还，他也没催。',
+    facts:['有借条，约定三年还清','十年未还，本人无还款能力','借款后老板获得其分管工程'],
+    amount:100,
+    truth:{who:'self',ask:'request',abnormal:'unreturned'},
+    reason:'有借条不等于真实借贷。判断借款型受贿，看有无归还意思、归还能力、未归还原因、资金去向。本案长期不还、无能力归还，且存在请托谋利，可能构成受贿。',
+    basis:'《刑法》第385条；“两高”《受贿意见》关于“以借为名”的规定',
+    gap:'调取资金去向、双方关于“不用还”的言词证据、还款能力证明。',
+    range:'民事借贷 / 受贿',
+    evidence:{
+      title:'借条与十年流水',
+      points:['借条约定三年还清，未约定利息','十年间无任何还款记录','同期老板中标其分管工程，合同金额 1,200 万元'],
+      note:'证明“无归还意思与能力”，借款只是形式。'
+    }
+  },
+  {
+    id:4,no:'第四条',title:'侄子名下的那套房',
+    hand:'房子登记在侄子名下，我想着这样干净。钥匙在我这，租金我收，物业费我交。侄子只是挂个名。',
+    facts:['房产登记在其侄子名下','本人实际居住并收取租金','购房款由老板支付'],
+    amount:180,
+    truth:{who:'nominee',ask:'request',abnormal:'abnormal'},
+    reason:'代持型受贿看实际控制、使用、收益、处分，而不是登记在谁名下。本人实际居住、收租、处分，侄子仅挂名，老板支付房款并有请托，可能构成受贿。',
+    basis:'“两高”《受贿意见》；代持型受贿的实质判断',
+    gap:'调取房产登记、租金流水、水电物业缴费记录、侄子关于代持的言词证据。',
+    range:'借用 / 受贿',
+    evidence:{
+      title:'房产登记与租金流水',
+      points:['房产登记在其侄子名下，购房款由老板支付','租金每月打入本人银行卡','水电、物业费均由本人缴纳'],
+      note:'证明“实际控制、使用、收益”，代持只是登记形式。'
+    }
+  },
+  {
+    id:5,no:'第五条',title:'妻子的“顾问费”',
+    hand:'老周公司每月给我爱人发两万“顾问费”。她没去上过班，我也不懂她顾问什么。老周说，嫂子帮我们看看政策就行。',
+    facts:['妻子每月领取 2 万元顾问费','未实际提供劳务，无考勤记录','老板有具体请托事项'],
+    amount:48,
+    truth:{who:'relative',ask:'request',abnormal:'noservice'},
+    reason:'特定关系人收受财物，本人明知并为其谋利，以受贿论处。“顾问费”只是名义，关键看是否实际提供劳务、是否与职务行为形成对价。',
+    basis:'《刑法》第385条；“两高”《受贿意见》关于特定关系人收受的规定',
+    gap:'调取劳动合同、考勤记录、工资发放凭证、请托事项材料。',
+    range:'违规兼职 / 受贿',
+    evidence:null
+  },
+  {
+    id:6,no:'第六条',title:'车里的高尔夫会员卡',
+    hand:'老周送了一张高尔夫会员卡，五万。我只去过两次，觉得不算什么。卡一直放在车里。',
+    facts:['会员卡价值 5 万元','本人仅消费两次','老板有职务影响，但无具体请托'],
+    amount:5,
+    truth:{who:'self',ask:'influence',abnormal:'abnormal'},
+    reason:'会员卡属于财产性利益。若与具体请托挂钩，可能构成受贿；若仅收受、无具体谋利事项，通常按违规收受礼品礼金处理。是否使用不影响收受的认定。',
+    basis:'《中国共产党纪律处分条例》廉洁纪律；中央八项规定精神',
+    gap:'调取会员卡登记、消费记录、是否存在请托事项。',
+    range:'违纪 / 受贿',
+    evidence:null
+  },
+  {
+    id:7,no:'第七条',title:'退休后的“顾问”',
+    hand:'退休后，老周聘我当顾问，年薪六十万。我不用上班，偶尔打个电话。他说，这是尊重老领导。',
+    facts:['在职期间为老板谋取利益','退休后未实际工作，领取高额年薪','双方曾口头约定“退休后再安排”'],
+    amount:120,
+    truth:{who:'self',ask:'request',abnormal:'noservice'},
+    reason:'在职谋利、离职收受，时间差不是防火墙。若能证明离职前后存在约定或默契，仍可认定为受贿，即所谓“期权腐败”。',
+    basis:'《刑法》第385条；“两高”《受贿意见》关于离职后收受的规定',
+    gap:'调取离职后任职协议、在职期间的谋利事项、双方关于“退休后安排”的言词证据。',
+    range:'违规兼职 / 受贿',
+    evidence:null
+  },
+  {
+    id:8,no:'第八条',title:'儿子的留学“奖学金”',
+    hand:'儿子出国，学费四十万。老周说他来资助，算是奖学金。我没细问，也没让儿子写借条。',
+    facts:['老板支付学费 40 万元','无真实奖学金项目','老板有具体请托事项'],
+    amount:40,
+    truth:{who:'relative',ask:'request',abnormal:'abnormal'},
+    reason:'由他人支付子女留学费用，属于变相收受财产性利益。本人明知并为其谋利，可能构成受贿；“奖学金”名义不影响实质认定。',
+    basis:'《刑法》第385条；“两高”《受贿意见》',
+    gap:'调取学费支付凭证、学校奖学金记录、双方关于资助的约定。',
+    range:'违纪 / 受贿',
+    evidence:null
+  },
+  {
+    id:9,no:'第九条',title:'两箱“自家喝”的茅台',
+    hand:'老周送来两箱茅台，说自家喝的。我收下了，想着几瓶酒，不算什么。后来一算，值三万。',
+    facts:['礼品价值 3 万元','老板有职务影响，但无具体请托','未登记上交'],
+    amount:3,
+    truth:{who:'self',ask:'influence',abnormal:'abnormal'},
+    reason:'违规收受礼品礼金与受贿的区别，在于有无具体请托和谋利事项。无具体请托的，通常按违纪处理；若后续为对方谋利，则可能转化为受贿。',
+    basis:'《中国共产党纪律处分条例》廉洁纪律；中央八项规定精神',
+    gap:'调取礼品购买凭证、是否存在请托事项、是否登记上交。',
+    range:'违纪 / 受贿',
+    evidence:null
+  },
+  {
+    id:10,no:'第十条',title:'百分之十的干股',
+    hand:'老周的项目公司给了我百分之十的干股，我没出钱。他说，算是技术入股。后来分了六十万红利。',
+    facts:['未实际出资，获得 10% 股份','参与分红 60 万元','老板有具体请托事项'],
+    amount:60,
+    truth:{who:'self',ask:'request',abnormal:'noservice'},
+    reason:'未出资而获得股份，属于干股型受贿。受贿数额一般按股份价值或实际分红认定。“技术入股”需要有真实的技术、劳务或知识产权对价。',
+    basis:'“两高”《受贿意见》关于干股的规定',
+    gap:'调取工商登记、出资记录、分红流水、是否存在真实技术入股。',
+    range:'违规经商 / 受贿',
+    evidence:{
+      title:'工商登记与分红流水',
+      points:['未实际出资，持股 10%','两年分红合计 60 万元','同期项目获批，审批环节由其分管'],
+      note:'证明“未出资获股”，属于干股型受贿。'
+    }
+  },
+  {
+    id:11,no:'第十一条',title:'海南的一周',
+    hand:'老周安排我们全家去海南玩了一周，机票酒店都是他订的，花了八万。我没给他钱，他也没提。',
+    facts:['老板支付旅游费用 8 万元','本人及家人接受安排','老板有职务影响，但无具体请托'],
+    amount:8,
+    truth:{who:'self',ask:'influence',abnormal:'abnormal'},
+    reason:'接受可能影响公正执行公务的旅游安排，属于违反中央八项规定精神。若与具体请托挂钩，可能构成受贿；否则按违纪处理。',
+    basis:'中央八项规定精神；《中国共产党纪律处分条例》廉洁纪律',
+    gap:'调取旅游行程、费用支付记录、是否存在请托事项。',
+    range:'违纪 / 受贿',
+    evidence:null
+  },
+  {
+    id:12,no:'第十二条',title:'五年没断的红包',
+    hand:'逢年过节，老周给我发个红包，两百块。我也回。五年了，没断过。',
+    facts:['每年春节、中秋各 200 元','双方互有往来','无具体请托事项'],
+    amount:0.02,
+    truth:{who:'self',ask:'none',abnormal:'normal'},
+    reason:'金额小、有来有往、无具体请托，通常属于正常礼尚往来。但若红包与职务行为形成长期“感情投资”，并后续产生请托，仍可能被整体评价。',
+    basis:'正常礼尚往来与“感情投资”的界限',
+    gap:'无需补证；注意留存往来记录，避免单向、异常累积。',
+    range:'正常人情',
+    evidence:null
+  }
+];
+
+/* ---------------- 术语释义 ---------------- */
+const GLOSSARY={
+  '受贿罪':'《刑法》第三百八十五条：国家工作人员利用职务上的便利，索取他人财物，或者非法收受他人财物，为他人谋取利益的，是受贿罪。',
+  '对价关系':'受贿的本质，是“权”与“钱”之间形成交换。判断看三点：有没有具体请托、有没有谋利事项、财物与职务行为是否对应。',
+  '特定关系人':'“两高”《受贿意见》指与国家工作人员有近亲属、情妇（夫）以及其他共同利益关系的人。其收受财物、本人明知并谋利的，以受贿论处。',
+  '代持':'财物登记在他人名下，但由本人实际控制、使用、收益、处分。认定看实质，不看登记形式。',
+  '干股':'未实际出资而获得的股份。受贿数额一般按股份价值或实际分红计算；有真实技术、劳务对价的除外。',
+  '期权腐败':'在职时为请托人谋利，离职后收受财物。若离职前后存在约定或默契，仍可认定受贿。',
+  '感情投资':'长期、小额、单向的财物输送，尚未提出具体请托。数额累计或后续产生请托时，可能被整体评价。',
+  '礼尚往来':'双方互有往来、金额相当、无具体请托的正常人情交往。与“感情投资”的界限在是否异常、是否与职务相关。',
+  '中央八项规定精神':'关于改进工作作风、密切联系群众的要求。违规收受礼品礼金、接受可能影响公正执行公务的宴请旅游等，均违反其精神。',
+  '廉洁纪律':'《中国共产党纪律处分条例》六大纪律之一，规范党员干部廉洁用权、廉洁修身、廉洁齐家。',
+  '留置':'《监察法》规定的调查措施，针对涉嫌严重职务违法或职务犯罪的人员。',
+  '谋利事项':'请托人希望国家工作人员利用职务便利为其实现的具体利益，是“权钱交易”的连接点。'
+};
+const ALT={
+  1:'若随礼金额与当地习俗相当，且无证据证明随礼与中标存在约定或默契，可认定为正常人情；但招标程序是否被干预仍需核查。',
+  2:'若无法证明本人明知请托并实际为其谋利，可能只认定为违规收受礼金；3 万元刚达立案标准，对证据要求更严。',
+  3:'若有借条、约定还款期，且本人确有还款意愿、因客观原因未还，应按民事借贷处理；关键是查清有无“不用还”的约定。',
+  4:'若侄子系真实购房、本人只是借住并代管租金，可能仅是借用关系；需查明购房款性质与产权归属的真实约定。',
+  5:'若妻子确曾提供政策咨询、公司也有真实业务需求，可能属于违规兼职取酬而非受贿；关键看劳务是否真实。',
+  6:'无具体请托时，收受会员卡一般按违规收受礼品礼金处理；未使用、已及时退回的，可以从轻或免予处分。',
+  7:'退休后任职若经批准、薪酬与实际工作相当，可能不构成受贿；关键看有无“在职谋利、离职兑现”的约定。',
+  8:'若奖学金由学校或基金真实设立、本人未参与评审，可能不构成受贿；但“无真实项目”的资助仍需查明。',
+  9:'价值 3 万元、未登记上交，一般按违规收受礼品礼金处理；如及时退还或上交，可不予处分。',
+  10:'若干股对应真实技术入股、本人确有技术贡献，可能属违规经商办企业而非受贿；关键看出资与对价是否真实。',
+  11:'无具体请托时，按违反中央八项规定精神处理；若费用已补交、主动说明，可酌情从轻。',
+  12:'金额小、双向、无请托，属于正常礼尚往来；但若长期单向累积、后续产生请托，可能被整体评价。'
+};
+const TERMS=['特定关系人','代持','干股','期权腐败','对价关系','感情投资','礼尚往来','谋利事项','廉洁纪律'];
+const TERM_RE=new RegExp('('+TERMS.slice().sort(function(a,b){return b.length-a.length;}).join('|')+')','g');
+function glossify(s){
+  return String(s).replace(TERM_RE,'<span class="term" data-term="$1">$1</span>');
+}
+
+/* ---------------- 案卷：人物关系 ---------------- */
+const NET={
+  nodes:[
+    {id:'zhou',name:'周某某',sub:'被审查调查人',x:290,y:30,w:150,h:46,color:'#9e2b25'},
+    {id:'laozhou',name:'老周',sub:'请托人 / 企业主',x:620,y:30,w:150,h:46,color:'#a8752a'},
+    {id:'wife',name:'妻子',sub:'特定关系人',x:90,y:148,w:130,h:42,color:'#2f4a6b'},
+    {id:'son',name:'儿子',sub:'近亲属',x:255,y:148,w:130,h:42,color:'#3f5a4a'},
+    {id:'nephew',name:'侄子',sub:'代持人',x:420,y:148,w:130,h:42,color:'#b08d57'},
+    {id:'hospital',name:'医院 / 专家',sub:'第三方收款',x:80,y:262,w:150,h:42,color:'#544c40'},
+    {id:'house',name:'房产',sub:'登记在侄子名下',x:360,y:262,w:150,h:42,color:'#b08d57'},
+    {id:'account',name:'银行账户',sub:'妻子、儿子名下',x:620,y:262,w:150,h:42,color:'#2f4a6b'},
+    {id:'project',name:'分管项目',sub:'审批 · 招标 · 贷款',x:360,y:368,w:170,h:42,color:'#9e2b25'}
+  ],
+  edges:[
+    {a:'zhou',b:'wife',t:'配偶',e:[5]},
+    {a:'zhou',b:'son',t:'父子',e:[8]},
+    {a:'zhou',b:'nephew',t:'叔侄',e:[4]},
+    {a:'laozhou',b:'zhou',t:'请托 / 谋利',e:[1,2,3,7,9,10,11,12]},
+    {a:'account',b:'wife',t:'顾问费',e:[5]},
+    {a:'account',b:'son',t:'“奖学金”',e:[8]},
+    {a:'laozhou',b:'hospital',t:'专家费',e:[2]},
+    {a:'laozhou',b:'house',t:'购房款',e:[4]},
+    {a:'zhou',b:'project',t:'分管',e:[1,3,7,10],dash:true},
+    {a:'laozhou',b:'project',t:'中标 / 获批',e:[1,3,10],dash:true}
+  ]
+};
+
+/* ---------------- 案卷：时间轴 ---------------- */
+const TIMELINE=[
+  {y:2010,t:'任副局长，分管审批',type:'post'},
+  {y:2015,t:'婚礼随礼 2000 元',id:1},
+  {y:2016,t:'专家费 3 万元',id:2},
+  {y:2017,t:'借条 100 万元',id:3},
+  {y:2018,t:'侄子名下房产',id:4},
+  {y:2018,t:'妻子“顾问费”',id:5},
+  {y:2019,t:'任局长',type:'post'},
+  {y:2019,t:'高尔夫会员卡',id:6},
+  {y:2020,t:'退休后“顾问”年薪',id:7},
+  {y:2021,t:'儿子留学“奖学金”',id:8},
+  {y:2022,t:'两箱茅台',id:9},
+  {y:2022,t:'百分之十干股',id:10},
+  {y:2023,t:'退休',type:'post'},
+  {y:2023,t:'海南一周',id:11},
+  {y:2024,t:'五年没断的红包',id:12}
+];
+
+/* ---------------- 状态与工具 ---------------- */
+const state={idx:0,answers:{},verdicts:{},muted:false,recallUsed:false,recalled:{}};
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+let currentScreen='cover';
+
+function show(id){
+  $$('.screen').forEach(el=>el.classList.toggle('active',el.id===id));
+  currentScreen=id;
+  window.scrollTo(0,0);
+}
+
+function judge(t){
+  const ask=t.ask,ab=t.abnormal;
+  if(ask==='unclear'||ab==='unclear') return '待核';
+  if(ask==='none'&&ab==='normal') return '人情';
+  if(ask==='request'&&ab==='normal') return '违纪';
+  if(ask==='request') return '受贿';
+  if(ask==='influence'){
+    if(ab==='normal') return '人情';
+    if(ab==='timing') return '待核';
+    return '违纪';
+  }
+  if(ask==='none') return '待核';
+  return '待核';
+}
+
+function vClass(v){
+  return {'人情':'v-renqing','违纪':'v-weiji','受贿':'v-shouhui','待核':'v-daihe'}[v]||'';
+}
+function label(opts,type){
+  const o=opts.find(x=>x.type===type);
+  return o?o.label:'未选';
+}
+function counts(){
+  const c={'人情':0,'违纪':0,'受贿':0,'待核':0};
+  ENTRIES.forEach(e=>{const v=state.verdicts[e.id];if(v)c[v]++;});
+  return c;
+}
+function totalAmount(){
+  let n=0;
+  ENTRIES.forEach(e=>{if(state.verdicts[e.id]==='受贿')n+=e.amount;});
+  return n;
+}
+function fmt(n){
+  return Number(n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');
+}
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* 法律账逐条落账 */
+function renderLedgerStrip(){
+  const done=ENTRIES.filter(function(e){return state.verdicts[e.id];});
+  const strip=$('#ledgerStrip');
+  if(!strip) return;
+  if(!done.length){strip.hidden=true;return;}
+  strip.hidden=false;
+  $('#ledgerRows').innerHTML=done.slice().reverse().map(function(e){
+    const v=state.verdicts[e.id];
+    return '<div class="row"><span class="r-idx">'+e.id+'</span>'+
+      '<span class="r-t">'+esc(e.title)+'</span>'+
+      '<span class="r-v '+vClass(v)+'">'+v+'</span></div>';
+  }).join('');
+  const c=counts();
+  $('#ledgerSum').textContent='已记录 '+done.length+' 条 · 受贿 '+c['受贿']+' 条 · 违纪 '+c['违纪']+' 条 · 认定金额 '+fmt(totalAmount())+' 万元';
+}
+
+/* 三个维度的判断准确率 */
+function dimStats(){
+  return [
+    {k:'q1',t:'who',label:'主体判断'},
+    {k:'q2',t:'ask',label:'请托判断'},
+    {k:'q3',t:'abnormal',label:'异常判断'}
+  ].map(function(d){
+    let hit=0,tot=0;
+    ENTRIES.forEach(function(e){
+      const a=state.answers[e.id];
+      if(a&&a[d.k]){
+        tot++;
+        if(a[d.k]===e.truth[d.t]) hit++;
+      }
+    });
+    return {label:d.label,hit:hit,tot:tot,pct:tot?Math.round(hit/tot*100):0};
+  });
+}
+
+/* 审理画像 */
+function profile(){
+  const diffs=ENTRIES.filter(function(e){return state.verdicts[e.id]!==judge(e.truth);});
+  const match=ENTRIES.length-diffs.length;
+  let strict=0,lenient=0;
+  ENTRIES.forEach(function(e){
+    const v=state.verdicts[e.id],ref=judge(e.truth);
+    if(v==='受贿'&&ref!=='受贿') strict++;
+    if((v==='人情'||v==='待核')&&(ref==='受贿')) lenient++;
+  });
+  let title,text;
+  if(match>=10){
+    title='你的判断经得起复核';
+    text='十二条里你与参考定性一致 '+match+' 条。你没有被“借条”“登记”“名义”这些形式带走，抓住了钱与权的对应关系。';
+  }else if(match>=7){
+    title='大致准确，但仍被形式迷惑';
+    text='一致 '+match+' 条。有几条账目你停在了表面：借条、代持、名义上的“顾问费”或“奖学金”，都可能只是包装。';
+  }else{
+    title='需要重新过一遍证据';
+    text='一致 '+match+' 条。审理不是凭感觉归位，建议回到三个问题：谁收的、有没有请托、是否异常。';
+  }
+  if(strict>lenient) text+=' 你的判断整体偏严，注意区分“违纪”与“受贿”的界限。';
+  else if(lenient>strict) text+=' 你的判断整体偏宽，注意“感情投资”长期累积后可能转化为对价。';
+  return {title:title,text:text,match:match,diffs:diffs,strict:strict,lenient:lenient};
+}
+/* ---------------- 导出 ---------------- */
+function buildExportText(){
+  const c=counts(),amount=totalAmount(),p=profile(),ds=dimStats();
+  const dt=new Date();
+  const gapList=Array.from(new Set(ENTRIES.filter(function(e){
+    return ['受贿','待核'].indexOf(state.verdicts[e.id])>-1;
+  }).map(function(e){return e.gap;})));
+  let s='《人情账本》审理意见\n（教学模拟 · 不构成法律意见）\n\n';
+  s+='被审查调查人：周某某\n审理人：体验者\n日期：'+dt.getFullYear()+'年'+(dt.getMonth()+1)+'月'+dt.getDate()+'日\n\n';
+  s+='一、审理结果\n';
+  s+='认定受贿金额：'+fmt(amount)+' 万元\n';
+  s+='受贿 '+c['受贿']+' 条；违纪 '+c['违纪']+' 条；人情 '+c['人情']+' 条；待核 '+c['待核']+' 条\n';
+  s+='参考一致性：'+p.match+' / '+ENTRIES.length+'\n\n';
+  s+='二、分项准确率\n';
+  ds.forEach(function(d){s+=d.label+'：'+d.hit+' / '+d.tot+'\n';});
+  s+='\n三、逐条定性\n';
+  ENTRIES.forEach(function(e){
+    s+='第'+e.id+'条《'+e.title+'》：'+(state.verdicts[e.id]||'未定')+'（参考：'+judge(e.truth)+'）\n';
+  });
+  s+='\n四、审理意见\n'+p.title+'。'+p.text+'\n\n';
+  s+='五、证据缺口\n';
+  if(gapList.length){gapList.forEach(function(g){s+='· '+g+'\n';});}else{s+='· 无\n';}
+  s+='\n本意见仅用于教学演示，人物、情节均为虚构，具体定性以司法认定为准。\n';
+  return s;
+}
+function downloadFile(name,text){
+  try{
+    const blob=new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=name;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},1200);
+  }catch(err){
+    alert('当前浏览器不支持下载，可直接截图保存本页。');
+  }
+}
+function exportResult(){
+  downloadFile('人情账本_审理意见.txt',buildExportText());
+}
+
+/* ---------------- 结尾图表 ---------------- */
+function chartColor(v){
+  return {'受贿':'#9e2b25','违纪':'#a8752a','人情':'#3f5a4a','待核':'#2f4a6b'}[v]||'#b9ab93';
+}
+function renderChart(){
+  const box=$('#amountChart');
+  if(!box) return;
+  const max=Math.max.apply(null,ENTRIES.map(function(e){return e.amount;}));
+  box.innerHTML='<h4>十 二 笔 账 的 体 量（万元）</h4><div class="bars">'+
+    ENTRIES.map(function(e){
+      const w=Math.max(2,Math.round(e.amount/max*100));
+      const v=state.verdicts[e.id]||'未定';
+      return '<div class="bar-row"><em>'+e.id+'</em>'+
+        '<span class="b-t">'+esc(e.title)+'</span>'+
+        '<span class="b-bg"><span class="b-fill" style="width:'+w+'%;background:'+chartColor(v)+'"></span></span>'+
+        '<span class="b-v">'+fmt(e.amount)+'</span></div>';
+    }).join('')+'</div>';
+}
+/* ---------------- 案卷渲染 ---------------- */
+const NODE_NOTE={
+  zhou:'被审查调查人。所有路径最终都要回到他的职务行为。',
+  laozhou:'请托人。判断重点：他送钱之后，项目、贷款、审批有没有向他倾斜。',
+  wife:'特定关系人。她收钱、本人知情并为其谋利，仍可能构成受贿。',
+  son:'近亲属。以学费、“奖学金”名义支付，属于变相的财产性利益。',
+  nephew:'代持人。登记在他名下，但实际居住、收租、缴费的是本人。',
+  hospital:'第三方收款。由他人支付应当由本人承担的费用，属于财产性利益。',
+  house:'代持房产。看实际控制、使用、收益，不看登记在谁名下。',
+  account:'资金落点。钱进谁的账户不是关键，谁实际支配才是。',
+  project:'职务行为的落点。审批、招标、贷款，是“权”的具体形态。'
+};
+function renderNet(){
+  const box=$('#netBox');
+  if(!box) return;
+  const map={};
+  NET.nodes.forEach(function(n){map[n.id]=n;});
+  let s='<svg class="viz-svg" viewBox="0 0 840 440" role="img" aria-label="人物关系与资金路径">';
+  NET.edges.forEach(function(ed,index){
+    const a=map[ed.a],b=map[ed.b];
+    if(!a||!b) return;
+    const x1=a.x+a.w/2,y1=a.y+a.h/2,x2=b.x+b.w/2,y2=b.y+b.h/2;
+    const mx=(x1+x2)/2,my=(y1+y2)/2;
+    s+='<g data-edge="'+index+'">';
+    s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(ed.dash?'rgba(158,43,37,.42)':'rgba(84,76,64,.42)')+'" stroke-width="'+(ed.dash?1.2:1.6)+'"'+(ed.dash?' stroke-dasharray="5 4"':'')+'/>';
+    s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="transparent" stroke-width="16" style="cursor:pointer"/>';
+    s+='<text class="vl-t" x="'+mx+'" y="'+(my-6)+'" text-anchor="middle">'+esc(ed.t)+'</text>';
+    s+='</g>';
+  });
+  NET.nodes.forEach(function(n){
+    s+='<g class="vn" data-node="'+n.id+'">';
+    s+='<rect x="'+n.x+'" y="'+n.y+'" width="'+n.w+'" height="'+n.h+'" rx="4" fill="'+n.color+'"/>';
+    s+='<text class="vtext" x="'+(n.x+n.w/2)+'" y="'+(n.y+n.h/2-7)+'">'+esc(n.name)+'</text>';
+    s+='<text class="vtext vsub" x="'+(n.x+n.w/2)+'" y="'+(n.y+n.h/2+10)+'">'+esc(n.sub)+'</text>';
+    s+='</g>';
+  });
+  s+='</svg>';
+  box.innerHTML=s;
+}
+function showNetDetail(el){
+  const out=$('#netDetail');
+  if(!out) return;
+  if(el.dataset.node){
+    const n=NET.nodes.find(function(x){return x.id===el.dataset.node;});
+    if(!n) return;
+    let ids=[];
+    NET.edges.forEach(function(ed){
+      if(ed.a===n.id||ed.b===n.id) ids=ids.concat(ed.e||[]);
+    });
+    ids=Array.from(new Set(ids)).sort(function(a,b){return a-b;});
+    let html='<b>'+esc(n.name)+'</b>（'+esc(n.sub)+'）。'+(NODE_NOTE[n.id]||'');
+    html+=ids.length?' 关联账目：'+ids.map(function(i){return '第'+i+'条';}).join('、')+'。':' 无直接对应账目。';
+    out.innerHTML=html;
+  }else if(el.dataset.edge!==undefined){
+    const ed=NET.edges[Number(el.dataset.edge)];
+    if(!ed) return;
+    out.innerHTML='<b>'+esc(ed.t)+'</b>。关联账目：'+(ed.e||[]).map(function(i){return '第'+i+'条';}).join('、')+'。';
+  }
+}
+function renderTimeline(){
+  const track=$('#tlTrack');
+  if(!track) return;
+  const n=TIMELINE.length;
+  track.innerHTML=TIMELINE.map(function(ev,i){
+    const left=5+i*(90/(n-1));
+    const up=i%2===0;
+    const color=ev.type==='post'?'#544c40':chartColor(state.verdicts[ev.id]||'');
+    return '<button data-ev="'+i+'" style="position:absolute;left:'+left+'%;top:50%;transform:translate(-50%,-50%);padding:0;background:none;color:#544c40">'+
+      '<span style="display:block;width:10px;height:10px;border-radius:50%;background:'+color+';border:2px solid #f4ecdc;box-shadow:0 0 0 1px rgba(34,31,26,.18)"></span>'+
+      '<span class="vl-t" style="position:absolute;left:50%;transform:translateX(-50%);'+(up?'bottom:15px':'top:15px')+';width:92px;text-align:center;line-height:1.45">'+ev.y+'<br>'+esc(ev.t)+'</span>'+
+      '</button>';
+  }).join('');
+}
+function showTlDetail(i){
+  const ev=TIMELINE[i];
+  const out=$('#tlDetail');
+  if(!ev||!out) return;
+  if(ev.type==='post'){
+    out.innerHTML='<b>'+ev.y+' 年 · '+esc(ev.t)+'</b>。职务节点决定了“职务便利”的范围，也决定后面每笔钱在时间上是否形成对价。';
+    return;
+  }
+  const e=ENTRIES.find(function(x){return x.id===ev.id;});
+  if(!e) return;
+  out.innerHTML='<b>'+ev.y+' 年 · 第'+e.id+'条《'+esc(e.title)+'》</b> ｜ 你的定性：'+(state.verdicts[e.id]||'未审理')+'<br>'+esc(e.facts[0])+'。';
+}
+
+/* ---------------- 音效（浏览器合成，无外部资源） ---------------- */
+let ac=null;
+function ensureAudio(){
+  if(!ac){
+    try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){ac=null;}
+  }
+  if(ac&&ac.state==='suspended'){ac.resume();}
+  return ac;
+}
+function playStamp(){
+  if(state.muted) return;
+  const c=ensureAudio();if(!c)return;
+  const t=c.currentTime;
+  const o=c.createOscillator(),g=c.createGain();
+  o.type='sine';o.frequency.setValueAtTime(92,t);o.frequency.exponentialRampToValueAtTime(42,t+.13);
+  g.gain.setValueAtTime(.42,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
+  o.connect(g).connect(c.destination);o.start(t);o.stop(t+.22);
+  const len=Math.floor(c.sampleRate*.07);
+  const buf=c.createBuffer(1,len,c.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<len;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);}
+  const src=c.createBufferSource();src.buffer=buf;
+  const ng=c.createGain();ng.gain.value=.16;
+  src.connect(ng).connect(c.destination);src.start(t);
+}
+function playPage(){
+  if(state.muted) return;
+  const c=ensureAudio();if(!c)return;
+  const t=c.currentTime;
+  const len=Math.floor(c.sampleRate*.16);
+  const buf=c.createBuffer(1,len,c.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<len;i++){d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2)*.45;}
+  const src=c.createBufferSource();src.buffer=buf;
+  const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=1150;f.Q.value=.7;
+  const g=c.createGain();g.gain.value=.1;
+  src.connect(f).connect(g).connect(c.destination);src.start(t);
+}
+
+/* ---------------- 渲染账目 ---------------- */
+function renderEntry(){
+  const e=ENTRIES[state.idx];
+  if(!state.answers[e.id]) state.answers[e.id]={q1:null,q2:null,q3:null};
+
+  $('#entryNo').textContent=e.no;
+  $('#entryTitle').textContent=e.title;
+  $('#entryHand').textContent=e.hand;
+  $('#entryFacts').innerHTML=e.facts.map(function(f){return '<div class="fact">'+glossify(f)+'</div>';}).join('');
+  $('#progressText').textContent='第 '+(state.idx+1)+' / '+ENTRIES.length+' 条';
+  $('#progressBar').style.width=(state.idx/ENTRIES.length*100)+'%';
+
+  const eb=$('#btnEvidence');
+  if(e.evidence){eb.hidden=false;eb.textContent='调取证据';eb.disabled=false;}
+  else{eb.hidden=true;}
+
+  const qs=[
+    {key:'q1',label:'这笔利益是谁收的？',opts:Q1},
+    {key:'q2',label:'有没有具体请托或谋利事项？',opts:Q2},
+    {key:'q3',label:'这笔利益是否异常？',opts:Q3}
+  ];
+  const saved=state.answers[e.id];
+  $('#questions').innerHTML=qs.map((q,i)=>{
+    const chips=q.opts.map(function(o){
+      const on=saved[q.key]===o.type?' on':'';
+      return '<button class="chip'+on+'" data-q="'+q.key+'" data-type="'+o.type+'">'+o.label+'</button>';
+    }).join('');
+    return '<div class="q-block"><div class="q-label"><span>'+String(i+1).padStart(2,'0')+'</span>'+q.label+'</div><div class="chips">'+chips+'</div></div>';
+  }).join('');
+
+  $('#note').hidden=true;
+  $('#note').innerHTML='';
+  $('#btnNext').hidden=true;
+  const mark=$('#stampMark');
+  mark.hidden=true;
+  mark.className='stamp-mark';
+  mark.textContent='';
+  $$('.stamp-btn').forEach(b=>{b.classList.remove('ready');b.disabled=false;});
+  $('#trayHint').hidden=false;
+  $('#trayHint').textContent='请先回答上方三个问题';
+  const rt=$('#recallTag');
+  if(state.recalled[e.id]){
+    rt.hidden=false;
+    rt.textContent='已退回补充调查 · 本条可重新盖章';
+  }else{
+    rt.hidden=true;rt.textContent='';
+  }
+  checkReady();
+  renderLedgerStrip();
+
+  $('#pageLeft').scrollTop=0;
+  $('#pageRight').scrollTop=0;
+  const book=$('#book');
+  book.classList.remove('in');
+  void book.offsetWidth;
+  book.classList.add('in');
+}
+
+function checkReady(){
+  const e=ENTRIES[state.idx];
+  const a=state.answers[e.id];
+  const ready=!!(a.q1&&a.q2&&a.q3);
+  const stamped=!!state.verdicts[e.id];
+  $$('.stamp-btn').forEach(b=>b.classList.toggle('ready',ready&&!stamped));
+  const hint=$('#trayHint');
+  if(ready){hint.hidden=true;}
+  else{hint.hidden=false;hint.textContent='请先回答上方三个问题';}
+}
+
+function showNote(e,v){
+  const ref=judge(e.truth);
+  const a=state.answers[e.id];
+  const same=v===ref;
+  let headText,headClass='';
+  if(ref==='待核'){headText='参考定性：待核（争议条目）';}
+  else if(same){headText='与参考定性一致';headClass='ok';}
+  else{headText='与参考定性存在分歧';headClass='diff';}
+
+  const note=$('#note');
+  note.innerHTML=
+    '<div class="note-head"><span class="note-ref '+headClass+'">'+headText+'</span><span>第 '+e.id+' 条</span></div>'+
+    '<p><b>你的判断：</b>'+label(Q1,a.q1)+' / '+label(Q2,a.q2)+' / '+label(Q3,a.q3)+'</p>'+
+    '<p><b>参考定性：</b>'+ref+'</p>'+
+    '<p><b>为什么：</b>'+glossify(e.reason)+'</p>'+
+    '<p><b>依据：</b>'+e.basis+'</p>'+
+    '<p><b>证据缺口：</b>'+e.gap+'</p>'+
+    '<p class="range"><b>可能的定性区间：</b>'+e.range+'</p>'+
+    '<button class="alt-btn" data-alt="'+e.id+'">看看另一种观点</button>'+
+    '<div class="alt-body" id="altBody" hidden></div>'+
+    (same||ref==='待核'?'':'<p class="diff">提示：你的判断与参考定性不同，建议对照证据缺口再看一遍。</p>')+
+    (state.recallUsed
+      ? '<div class="recall-bar"><p>退回补充调查的机会已用完。</p><button class="recall-btn" disabled>已使用</button></div>'
+      : '<div class="recall-bar"><p>对本条结论有疑问？可退回补充调查一次，调取证据后重新盖章。</p><button class="recall-btn" id="btnRecall">退回补充调查</button></div>');
+  note.hidden=false;
+}
+
+function stamp(v){
+  const e=ENTRIES[state.idx];
+  if(state.verdicts[e.id]) return;
+  state.verdicts[e.id]=v;
+  const mark=$('#stampMark');
+  mark.textContent=v;
+  mark.className='stamp-mark '+vClass(v);
+  mark.hidden=false;
+  playStamp();
+  showNote(e,v);
+  $$('.stamp-btn').forEach(b=>{b.classList.remove('ready');b.disabled=true;});
+  $('#trayHint').hidden=true;
+  const next=$('#btnNext');
+  next.hidden=false;
+  next.textContent=state.idx===ENTRIES.length-1?'生成审理意见':'下一条';
+  save();
+  renderLedgerStrip();
+}
+
+/* ---------------- 汇总与报告 ---------------- */
+function renderSummary(){
+  const c=counts();
+  $('#summaryLine').textContent='受贿 '+c['受贿']+' 条 · 违纪 '+c['违纪']+' 条 · 人情 '+c['人情']+' 条 · 待核 '+c['待核']+' 条';
+  $('#summaryGrid').innerHTML=ENTRIES.map(e=>{
+    const v=state.verdicts[e.id]||'未定';
+    return '<div class="sum-card"><div class="sum-no">'+e.id+'</div><div class="sum-title">'+e.title+'</div><span class="sum-badge '+vClass(v)+'">'+v+'</span></div>';
+  }).join('');
+}
+
+function renderReport(){
+  const c=counts();
+  const amount=totalAmount();
+  const diffs=ENTRIES.filter(e=>state.verdicts[e.id]!==judge(e.truth));
+
+  $('#reportStats').innerHTML=
+    '<div class="stat"><b>'+fmt(amount)+'</b><span>认定受贿金额（万元）</span></div>'+
+    '<div class="stat"><b>'+c['受贿']+'</b><span>受贿条数</span></div>'+
+    '<div class="stat"><b>'+c['违纪']+'</b><span>违纪条数</span></div>'+
+    '<div class="stat"><b>'+c['待核']+'</b><span>待核条数</span></div>';
+
+  const ds=dimStats(),p=profile();
+  $('#kpiRow').innerHTML=ds.map(function(d){
+    return '<div class="kpi"><b>'+d.hit+' / '+d.tot+'</b><span>'+d.label+'准确率 '+d.pct+'%</span></div>';
+  }).join('');
+  $('#verdictHero').innerHTML='<h3>审理画像 · '+p.title+'</h3><p>'+p.text+'</p>';
+
+  $('#hisBook').innerHTML=ENTRIES.map(function(e){
+    return '<li><i>'+e.id+'</i><span>'+esc(e.title)+'</span></li>';
+  }).join('');
+  const lawRows=ENTRIES.filter(function(e){
+    return state.verdicts[e.id]==='受贿'||state.verdicts[e.id]==='违纪';
+  });
+  $('#lawBook').innerHTML=lawRows.length?lawRows.map(function(e){
+    const v=state.verdicts[e.id];
+    return '<li><i>'+e.id+'</i><span>'+esc(e.title)+'</span><b style="margin-left:auto;white-space:nowrap;color:'+(v==='受贿'?'#9e2b25':'#a8752a')+'">'+v+(v==='受贿'?' '+fmt(e.amount)+' 万':'')+'</b></li>';
+  }).join(''):'<li><i>—</i><span>本账暂无记录</span></li>';
+
+  let d='';
+  if(c['受贿']+c['违纪']>0){
+    d='周某某收受可能影响公正执行公务的财物，涉嫌违反廉洁纪律。建议依据《中国共产党纪律处分条例》有关规定，给予相应党纪处分。';
+    if(c['受贿']>0){
+      d+=' 其中涉嫌受贿犯罪的部分，建议依据《监察法》移送司法机关依法处理。';
+    }
+  }else{
+    d='未发现需要追究纪律责任的条目。';
+  }
+  $('#disciplineText').textContent=d;
+
+  let l='';
+  if(amount>=300){
+    l='按教学模型，认定受贿金额约 '+fmt(amount)+' 万元，达到“数额特别巨大”档，涉嫌受贿犯罪，建议移送司法机关。';
+  }else if(amount>=20){
+    l='按教学模型，认定受贿金额约 '+fmt(amount)+' 万元，达到“数额巨大”档，涉嫌受贿犯罪，建议移送司法机关。';
+  }else if(amount>=3){
+    l='按教学模型，认定受贿金额约 '+fmt(amount)+' 万元，达到“数额较大”档，涉嫌受贿犯罪，建议移送司法机关。';
+  }else if(amount>0){
+    l='认定金额约 '+fmt(amount)+' 万元，未达刑事立案标准，主要按违纪处理。';
+  }else{
+    l='未认定受贿金额。';
+  }
+  l+=' 具体定性以司法认定为准。';
+  $('#legalText').textContent=l;
+
+  const gapEntries=ENTRIES.filter(e=>['受贿','待核'].includes(state.verdicts[e.id]));
+  const gaps=Array.from(new Set(gapEntries.map(e=>e.gap)));
+  $('#gapList').innerHTML=gaps.length?gaps.map(g=>'<li>'+g+'</li>').join(''):'<li>无</li>';
+
+  if(diffs.length){
+    $('#diffList').innerHTML=diffs.map(e=>'<li>第 '+e.id+' 条《'+e.title+'》：你定为「'+state.verdicts[e.id]+'」，参考定性为「'+judge(e.truth)+'」。</li>').join('');
+  }else{
+    $('#diffList').innerHTML='<li>你的判断与参考定性全部一致。</li>';
+  }
+
+  $('#matchText').textContent=(ENTRIES.length-diffs.length)+' / '+ENTRIES.length;
+
+  const dt=new Date();
+  $('#reportDate').textContent=dt.getFullYear()+'年'+(dt.getMonth()+1)+'月'+dt.getDate()+'日';
+}
+
+/* ---------------- 案卷 / 退查 / 存档 ---------------- */
+let caseBack='cover';
+function openCase(){
+  if(currentScreen!=='case') caseBack=currentScreen;
+  renderNet();
+  renderTimeline();
+  show('case');
+}
+function doRecall(){
+  if(state.recallUsed) return;
+  const e=ENTRIES[state.idx];
+  state.recallUsed=true;
+  state.recalled[e.id]=true;
+  const m=$('#evidenceModal');
+  m.querySelector('h2').textContent=e.evidence?e.evidence.title:'退回补充调查提纲';
+  m.querySelector('.evidence-body').innerHTML=e.evidence
+    ? '<ul>'+e.evidence.points.map(function(p){return '<li>'+p+'</li>';}).join('')+'</ul><p class="ev-note">'+e.evidence.note+'</p>'
+    : '<ul><li>'+e.gap+'</li></ul><p class="ev-note">补充调查结果：证据仍不充分，相关事实需进一步核实。本条可重新盖章。</p>';
+  openModal('evidenceModal');
+  delete state.verdicts[e.id];
+  playPage();
+  renderEntry();
+  save();
+}
+const STORE_KEY='renqing_ledger_v1';
+function save(){
+  try{
+    localStorage.setItem(STORE_KEY,JSON.stringify({
+      idx:state.idx,answers:state.answers,verdicts:state.verdicts,
+      recallUsed:state.recallUsed,recalled:state.recalled
+    }));
+  }catch(e){}
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw) return false;
+    const d=JSON.parse(raw);
+    if(!d||!d.verdicts) return false;
+    state.idx=d.idx||0;
+    state.answers=d.answers||{};
+    state.verdicts=d.verdicts||{};
+    state.recallUsed=!!d.recallUsed;
+    state.recalled=d.recalled||{};
+    return true;
+  }catch(e){return false;}
+}
+function clearSaved(){
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+}
+
+/* ---------------- 交互绑定 ---------------- */
+$('#btnStart').addEventListener('click',function(){
+  playPage();
+  show('identity');
+});
+$('#btnBegin').addEventListener('click',function(){
+  playPage();
+  show('ledger');
+  renderEntry();
+});
+
+$('#questions').addEventListener('click',function(ev){
+  const btn=ev.target.closest('.chip');
+  if(!btn) return;
+  const e=ENTRIES[state.idx];
+  if(state.verdicts[e.id]) return;
+  const q=btn.dataset.q;
+  state.answers[e.id][q]=btn.dataset.type;
+  btn.parentElement.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('on',c===btn);});
+  checkReady();
+});
+
+Array.prototype.forEach.call(document.querySelectorAll('.stamp-btn'),function(btn){
+  btn.addEventListener('click',function(){
+    if(!btn.classList.contains('ready')) return;
+    stamp(btn.dataset.v);
+  });
+});
+
+$('#btnNext').addEventListener('click',function(){
+  if(state.idx>=ENTRIES.length-1){
+    save();
+    renderSummary();
+    playPage();
+    show('summary');
+    return;
+  }
+  state.idx++;
+  save();
+  playPage();
+  renderEntry();
+});
+
+$('#btnEvidence').addEventListener('click',function(){
+  const e=ENTRIES[state.idx];
+  if(!e.evidence) return;
+  const m=$('#evidenceModal');
+  m.querySelector('h2').textContent=e.evidence.title;
+  m.querySelector('.evidence-body').innerHTML=
+    '<ul>'+e.evidence.points.map(function(p){return '<li>'+p+'</li>';}).join('')+'</ul>'+
+    '<p class="ev-note">'+e.evidence.note+'</p>';
+  openModal('evidenceModal');
+});
+
+$('#btnReport').addEventListener('click',function(){
+  renderReport();
+  playPage();
+  show('report');
+});
+$('#btnEnding').addEventListener('click',function(){
+  renderChart();
+  playPage();
+  show('ending');
+});
+$('#btnRestart').addEventListener('click',function(){
+  state.idx=0;
+  state.answers={};
+  state.verdicts={};
+  state.recallUsed=false;
+  state.recalled={};
+  clearSaved();
+  const rb=document.getElementById('btnResume');
+  if(rb) rb.remove();
+  show('cover');
+});
+
+$('#btnRules').addEventListener('click',function(){openModal('rulesModal');});
+$('#btnRules2').addEventListener('click',function(){openModal('rulesModal');});
+$('#btnAbout').addEventListener('click',function(){openModal('aboutModal');});
+$('#btnAbout2').addEventListener('click',function(){openModal('aboutModal');});
+
+$('#btnMute').addEventListener('click',function(){
+  state.muted=!state.muted;
+  this.textContent='音效：'+(state.muted?'关':'开');
+});
+
+/* ---------------- 案卷与导出绑定 ---------------- */
+['btnCase','btnCaseCover','btnCaseIdentity','btnCaseSummary','btnCaseReport','btnCaseEnding'].forEach(function(id){
+  const b=document.getElementById(id);
+  if(b) b.addEventListener('click',function(){playPage();openCase();});
+});
+$('#btnCaseClose').addEventListener('click',function(){playPage();show(caseBack);});
+$$('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    $$('.tab').forEach(function(x){x.classList.toggle('on',x===t);});
+    $$('.viz-pane').forEach(function(p){p.classList.toggle('on',p.id===t.dataset.pane);});
+    if(t.dataset.pane==='paneTime') renderTimeline();
+  });
+});
+$('#netBox').addEventListener('click',function(ev){
+  const el=ev.target.closest('[data-node],[data-edge]');
+  if(el) showNetDetail(el);
+});
+$('#tlTrack').addEventListener('click',function(ev){
+  const b=ev.target.closest('[data-ev]');
+  if(b) showTlDetail(Number(b.dataset.ev));
+});
+document.addEventListener('click',function(ev){
+  const t=ev.target.closest('.term');
+  if(!t) return;
+  const m=$('#glossaryModal');
+  m.querySelector('h2').textContent=t.dataset.term;
+  m.querySelector('.evidence-body').innerHTML='<p style="font-size:13.5px;line-height:1.95">'+(GLOSSARY[t.dataset.term]||'暂无释义')+'</p>';
+  openModal('glossaryModal');
+});
+$('#note').addEventListener('click',function(ev){
+  const alt=ev.target.closest('[data-alt]');
+  if(alt){
+    const body=$('#altBody');
+    if(!body) return;
+    if(body.hidden){
+      body.innerHTML='<b>另一种可能：</b>'+ALT[alt.dataset.alt]+' 这不是“正确答案”，而是审理中必须排除的竞争性解释。';
+      body.hidden=false;
+      alt.textContent='收起另一种观点';
+    }else{
+      body.hidden=true;
+      alt.textContent='看看另一种观点';
+    }
+    return;
+  }
+  if(ev.target.closest('#btnRecall')) doRecall();
+});
+['btnExportReport','btnExportSummary','btnExportEnding'].forEach(function(id){
+  const b=document.getElementById(id);
+  if(b) b.addEventListener('click',exportResult);
+});
+
+/* ---------------- 弹窗 ---------------- */
+function openModal(id){
+  const m=document.getElementById(id);
+  if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}
+}
+function closeModal(id){
+  const m=document.getElementById(id);
+  if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}
+}
+Array.prototype.forEach.call(document.querySelectorAll('[data-close]'),function(b){
+  b.addEventListener('click',function(){closeModal(b.dataset.close);});
+});
+Array.prototype.forEach.call(document.querySelectorAll('.modal'),function(m){
+  m.addEventListener('click',function(ev){if(ev.target===m){closeModal(m.id);}});
+});
+document.addEventListener('keydown',function(ev){
+  if(ev.key==='Escape'){
+    Array.prototype.forEach.call(document.querySelectorAll('.modal.open'),function(m){closeModal(m.id);});
+    return;
+  }
+  if(currentScreen==='ledger'&&!document.querySelector('.modal.open')){
+    const e=ENTRIES[state.idx];
+    if(state.verdicts[e.id]&&(ev.key==='Enter'||ev.key==='ArrowRight')){
+      ev.preventDefault();
+      $('#btnNext').click();
+      return;
+    }
+    if(!state.verdicts[e.id]){
+      const map={'1':'人情','2':'违纪','3':'受贿','4':'待核'};
+      if(map[ev.key]){
+        const btn=document.querySelector('.stamp-btn[data-v="'+map[ev.key]+'"]');
+        if(btn&&btn.classList.contains('ready')){btn.click();}
+      }
+    }
+  }
+});
+
+/* ---------------- 恢复进度 ---------------- */
+if(load()){
+  const done=Object.keys(state.verdicts).length;
+  const wrap=document.querySelector('.cover-actions');
+  if(done>0&&wrap){
+    const b=document.createElement('button');
+    b.className='btn';
+    b.id='btnResume';
+    b.style.color='#d8cbb4';
+    b.style.borderColor='rgba(216,203,180,.34)';
+    b.textContent=done>=ENTRIES.length?'查看上次结果':'继续上次（已审 '+done+' 条）';
+    b.addEventListener('click',function(){
+      if(done>=ENTRIES.length){renderSummary();show('summary');}
+      else{show('ledger');renderEntry();}
+    });
+    wrap.appendChild(b);
+  }
+}
+
+})();
+</script>
+</body>
+</html>
