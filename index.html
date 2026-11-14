@@ -226,6 +226,29 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .btn-prev:hover{border-color:var(--ink);color:var(--ink);background:rgba(34,31,26,.04)}
 .chip:disabled{opacity:.9;cursor:default}
 
+/* ---------- 合议意见 ---------- */
+.op-toggle{width:100%;margin-top:12px;padding:9px;border:1px dashed rgba(47,74,107,.5);border-radius:3px;font-size:12px;color:var(--blue);background:rgba(47,74,107,.05);transition:.16s}
+.op-toggle:hover{background:rgba(47,74,107,.11)}
+.opinions{margin-top:10px;padding:12px 14px;border:1px solid rgba(47,74,107,.3);border-left:3px solid var(--blue);background:rgba(47,74,107,.05);animation:fade .28s ease}
+.op-head{font-size:10.5px;letter-spacing:.24em;color:var(--blue);margin-bottom:6px}
+.op-card{padding:9px 0;border-bottom:1px dotted rgba(34,31,26,.15)}
+.op-card:last-child{border-bottom:0;padding-bottom:2px}
+.op-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.op-by{font-size:10.5px;letter-spacing:.12em;color:var(--muted)}
+.op-v{font-size:10.5px;padding:1px 7px;border:1px solid currentColor;border-radius:999px}
+.op-why{font-size:12px;line-height:1.7;color:var(--ink2)}
+.op-take{margin-top:6px;padding:4px 10px;font-size:11px;border:1px solid rgba(34,31,26,.4);border-radius:3px;color:var(--ink)}
+.op-take:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.op-foot{margin-top:8px;font-size:10.5px;color:var(--muted);line-height:1.7}
+
+/* ---------- 量刑尺 ---------- */
+.ruler{margin:2px 0 18px;padding:15px 18px;background:rgba(255,255,255,.36);border:1px solid rgba(34,31,26,.14)}
+.ruler h3{font-size:11.5px;letter-spacing:.2em;color:var(--red);margin-bottom:10px}
+.ruler input[type=range]{width:100%;accent-color:#9e2b25;margin:2px 0 4px}
+.ruler-marks{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+.ruler-out{font-size:12.4px;line-height:1.85;color:var(--ink2);margin-top:8px;padding-top:8px;border-top:1px dotted rgba(34,31,26,.16)}
+.ruler-out b{color:var(--red)}
+
 /* ---------- summary ---------- */
 #summary{background:radial-gradient(900px 600px at 50% 10%, #262019 0%, transparent 60%)}
 .panel{width:min(980px,94vw);background:var(--paper);padding:42px 44px;box-shadow:0 40px 90px rgba(0,0,0,.55);border-radius:3px}
@@ -515,6 +538,8 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
     <div class="page page-right" id="pageRight">
       <div class="page-label">审 理 提 纲</div>
       <div class="questions" id="questions"></div>
+      <button class="op-toggle" id="btnOpinions" hidden>查看合议意见（3 份）</button>
+      <div class="opinions" id="opinions" hidden></div>
 
       <div class="stamp-tray">
         <div class="tray-label">盖 章 定 性</div>
@@ -623,6 +648,13 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
     <div class="duo">
       <div class="paper-col"><h4>他 的 人 情 账</h4><ul id="hisBook"></ul></div>
       <div class="paper-col"><h4>你 的 法 律 账</h4><ul id="lawBook"></ul></div>
+    </div>
+
+    <div class="ruler">
+      <h3>量 刑 尺 · 数额与刑罚档</h3>
+      <input type="range" id="ruler" min="0" max="600" step="1" value="0" aria-label="受贿数额">
+      <div class="ruler-marks"><span>拖动查看：3 万 · 20 万 · 300 万 是三道坎</span></div>
+      <div class="ruler-out" id="rulerOut"></div>
     </div>
 
     <div class="report-columns">
@@ -1062,6 +1094,44 @@ const TIMELINE=[
 ];
 
 /* ---------------- 状态与工具 ---------------- */
+const OPINIONS={
+ 1:[{by:'承办人',v:'人情',why:'2000 元与当地随礼相当，无具体请托事项，宜作正常往来。'},
+    {by:'室主任',v:'待核',why:'随礼在前、中标在后，需核查招标是否被其职务影响。'},
+    {by:'分管领导',v:'违纪',why:'若确因职务关系收受，至少违反廉洁纪律。'}],
+ 2:[{by:'承办人',v:'受贿',why:'请托在前，由请托人直接向医院付费，属于代付式受贿。'},
+    {by:'室主任',v:'受贿',why:'收款对象是近亲属，但利益归属于本人，仍应认定受贿。'},
+    {by:'分管领导',v:'违纪',why:'请托与付款的对应关系还缺一笔书证，暂按违纪处理。'}],
+ 3:[{by:'承办人',v:'受贿',why:'十年未还、无还款能力，借条只是掩盖受贿的形式。'},
+    {by:'室主任',v:'受贿',why:'出借人与本人职务事项高度关联，名为借贷、实为收受。'},
+    {by:'分管领导',v:'待核',why:'借条真实存在，需审计资金最终去向后再定性。'}],
+ 4:[{by:'承办人',v:'受贿',why:'侄子代持、本人实际使用，属于代持型受贿。'},
+    {by:'室主任',v:'受贿',why:'购房款由请托人支付，产权登记只是形式。'},
+    {by:'分管领导',v:'待核',why:'代持合意缺书面证据，需补充询问与实际使用证据。'}],
+ 5:[{by:'承办人',v:'受贿',why:'未实际提供劳务，"顾问费"是对职务行为的对价。'},
+    {by:'室主任',v:'受贿',why:'配偶领取、本人知情，属于特定关系人收受。'},
+    {by:'分管领导',v:'违纪',why:'无劳务事实清楚，但金额与项目挂钩的证据不足。'}],
+ 6:[{by:'承办人',v:'违纪',why:'收受消费卡违反廉洁纪律，未达受贿数额门槛。'},
+    {by:'室主任',v:'违纪',why:'卡值 5 万元，但缺少为其谋利的具体事项。'},
+    {by:'分管领导',v:'受贿',why:'送卡时间与项目审批高度吻合，应认定对价关系。'}],
+ 7:[{by:'承办人',v:'受贿',why:'在职时约定、退休后兑现，属于期权腐败。'},
+    {by:'室主任',v:'受贿',why:'"顾问"无实质工作，是延期支付的对价。'},
+    {by:'分管领导',v:'违纪',why:'退休后违规任职清楚，但在职期间约定的证据不足。'}],
+ 8:[{by:'承办人',v:'受贿',why:'以"奖学金"名义支付，实际是子女留学费用。'},
+    {by:'室主任',v:'受贿',why:'资助方与本人职务事项直接相关，属于变相收受。'},
+    {by:'分管领导',v:'待核',why:'资助主体是学校还是企业，需调取付款凭证。'}],
+ 9:[{by:'承办人',v:'违纪',why:'收受礼品违反廉洁纪律，数额未达刑事标准。'},
+    {by:'室主任',v:'违纪',why:'无请托、无谋利，按违规收受礼品处理。'},
+    {by:'分管领导',v:'人情',why:'两箱酒自用、价值有限，可考虑作正常往来。'}],
+ 10:[{by:'承办人',v:'受贿',why:'未出资而持股，属于干股型受贿，按分红认定数额。'},
+     {by:'室主任',v:'受贿',why:'股权登记在他人名下，不影响本人实际控制。'},
+     {by:'分管领导',v:'违纪',why:'尚未实际分红，是否形成受贿数额需核实。'}],
+ 11:[{by:'承办人',v:'违纪',why:'接受管理服务对象安排的旅游，违反廉洁纪律。'},
+     {by:'室主任',v:'违纪',why:'费用由企业支付，属于可能影响公正执行公务的接待。'},
+     {by:'分管领导',v:'人情',why:'若事后已补交费用，可不作违纪认定。'}],
+ 12:[{by:'承办人',v:'人情',why:'五年往来、金额固定且对等，属于正常礼尚往来。'},
+     {by:'室主任',v:'人情',why:'无请托、无职务关联，不宜作违纪处理。'},
+     {by:'分管领导',v:'人情',why:'双方互有往来，符合当地习俗。'}]
+};
 const state={idx:0,answers:{},verdicts:{},muted:false,recallUsed:false,recalled:{}};
 const $=s=>document.querySelector(s);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1419,8 +1489,13 @@ function renderEntry(){
 
   $('#note').hidden=true;
   $('#note').innerHTML='';
-  $('#btnNext').hidden=true;
   $('#btnPrev').hidden=state.idx===0;
+  const opBtn=$('#btnOpinions');
+  opBtn.hidden=!OPINIONS[e.id]||!!state.verdicts[e.id];
+  opBtn.textContent='查看合议意见（3 份）';
+  $('#opinions').hidden=true;
+  $('#opinions').innerHTML='';
+  $('#btnNext').hidden=true;
   const mark=$('#stampMark');
   mark.hidden=true;
   mark.className='stamp-mark';
@@ -1485,6 +1560,7 @@ function showNote(e,v){
     '<div class="note-head"><span class="note-ref '+headClass+'">'+headText+'</span><span>第 '+e.id+' 条</span></div>'+
     '<p><b>你的判断：</b>'+label(Q1,a.q1)+' / '+label(Q2,a.q2)+' / '+label(Q3,a.q3)+'</p>'+
     '<p><b>参考定性：</b>'+ref+'</p>'+
+    (OPINIONS[e.id]?'<p><b>合议意见：</b>'+OPINIONS[e.id].map(o=>o.by+' '+o.v).join(' · ')+'</p>':'')+
     '<p><b>为什么：</b>'+glossify(e.reason)+'</p>'+
     '<p><b>依据：</b>'+e.basis+'</p>'+
     '<p><b>证据缺口：</b>'+e.gap+'</p>'+
@@ -1533,6 +1609,16 @@ function renderSummary(){
   }).join('');
 }
 
+function updateRuler(v){
+  let tier,pen;
+  if(v<3){tier='未达刑事立案标准';pen='不作受贿犯罪处理；可能构成违纪，依党纪或监察法处理。';}
+  else if(v<20){tier='数额较大';pen='三年以下有期徒刑或者拘役，并处罚金（刑法第 383 条）。';}
+  else if(v<300){tier='数额巨大';pen='三年以上十年以下有期徒刑，并处罚金或者没收财产。';}
+  else{tier='数额特别巨大';pen='十年以上有期徒刑或者无期徒刑，并处罚金或者没收财产。';}
+  $('#rulerOut').innerHTML='<b>'+fmt(v)+' 万元</b> · '+tier+'<br>'+pen+
+    '<br><span style="color:#8b8275">本案按你的认定合计 '+fmt(totalAmount())+' 万元。</span>';
+}
+
 function renderReport(){
   const c=counts();
   const amount=totalAmount();
@@ -1545,6 +1631,9 @@ function renderReport(){
     '<div class="stat"><b>'+c['待核']+'</b><span>待核条数</span></div>';
 
   const ds=dimStats(),p=profile();
+  const rv=Math.min(600,Math.round(amount));
+  $('#ruler').value=rv;
+  updateRuler(rv);
   $('#kpiRow').innerHTML=ds.map(function(d){
     return '<div class="kpi"><b>'+d.hit+' / '+d.tot+'</b><span>'+d.label+'准确率 '+d.pct+'%</span></div>';
   }).join('');
@@ -1714,6 +1803,34 @@ $('#btnPrev').addEventListener('click',function(){
   save();
   playPage();
   renderEntry();
+});
+
+$('#btnOpinions').addEventListener('click',function(){
+  const box=$('#opinions');
+  if(!box.hidden){
+    box.hidden=true;
+    this.textContent='查看合议意见（3 份）';
+    return;
+  }
+  const e=ENTRIES[state.idx];
+  const ops=OPINIONS[e.id]||[];
+  box.innerHTML='<div class="op-head">合 议 记 录</div>'+ops.map(function(o){
+    return '<div class="op-card"><div class="op-top"><span class="op-by">'+o.by+'</span><span class="op-v '+vClass(o.v)+'">'+o.v+'</span></div><div class="op-why">'+o.why+'</div><button class="op-take" data-take="'+o.v+'">采纳此意见并盖章</button></div>';
+  }).join('')+'<div class="op-foot">合议只是参考。盖章权在你：采纳哪一份，法律账就记哪一笔。</div>';
+  box.hidden=false;
+  this.textContent='收起合议意见';
+});
+
+$('#ruler').addEventListener('input',function(){
+  updateRuler(Number(this.value));
+});
+
+$('#opinions').addEventListener('click',function(ev){
+  const b=ev.target.closest('.op-take');
+  if(!b) return;
+  stamp(b.getAttribute('data-take'));
+  $('#opinions').hidden=true;
+  $('#btnOpinions').hidden=true;
 });
 
 $('#btnEvidence').addEventListener('click',function(){
