@@ -408,7 +408,10 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
   .kpis{grid-template-columns:1fr}
   .duo{grid-template-columns:1fr}
   .ledger-strip{display:none}
-  .tl-track{height:180px}
+  .tl-track{height:180px;min-width:860px}
+  #tlBox{overflow-x:auto;padding-bottom:6px}
+  #netBox{overflow-x:auto}
+  #netBox .viz-svg{min-width:560px}
   .bar-row .b-t{width:76px}
 }
 @media (max-width:420px){
@@ -1404,7 +1407,7 @@ function checkReady(){
   const stamped=!!state.verdicts[e.id];
   $$('.stamp-btn').forEach(b=>b.classList.toggle('ready',ready&&!stamped));
   const hint=$('#trayHint');
-  if(ready){hint.hidden=true;}
+  if(ready){hint.hidden=false;hint.textContent='选择一枚印章盖章，或按 1–4';}
   else{hint.hidden=false;hint.textContent='请先回答上方三个问题';}
 }
 
@@ -1445,6 +1448,12 @@ function stamp(v){
   mark.hidden=false;
   playStamp();
   showNote(e,v);
+  const note=$('#note');
+  if(window.matchMedia('(max-width:900px)').matches){
+    note.scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+    $('#pageRight').scrollTo({top:Math.max(0,note.offsetTop-28),behavior:'smooth'});
+  }
   $$('.stamp-btn').forEach(b=>{b.classList.remove('ready');b.disabled=true;});
   $('#trayHint').hidden=true;
   const next=$('#btnNext');
